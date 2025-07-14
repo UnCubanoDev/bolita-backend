@@ -134,6 +134,11 @@ class AuthController extends Controller
         return response()->json(['token' => $token], 201);
     }
 
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
     /**
      * Genera un código de referencia único.
      *
