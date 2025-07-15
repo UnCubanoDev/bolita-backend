@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\EditAction;
 
 class RechargeRequestResource extends Resource
 {
@@ -23,24 +26,26 @@ class RechargeRequestResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
+                Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->numeric()
-                    ->required(),
+                    ->required()
+                    ->disabled(fn ($record) => in_array($record?->status, ['approved', 'rejected'])), // Deshabilita el campo si el estado es 'approved' o 'rejected'
                 Forms\Components\FileUpload::make('image_path')
                     ->image()
                     ->directory('recharge_images')
                     ->required(),
-                Forms\Components\Select::make('status')
+                Select::make('status')
                     ->options([
                         'pending' => 'Pendiente',
                         'approved' => 'Aprobada',
                         'rejected' => 'Rechazada',
                     ])
                     ->default('pending')
-                    ->required(),
+                    ->required()
+                    ->disabled(fn ($record) => in_array($record?->status, ['approved', 'rejected'])), // Deshabilita el campo si el estado es 'approved' o 'rejected'
             ]);
     }
 
@@ -65,7 +70,8 @@ class RechargeRequestResource extends Resource
                     ->modalHeading('Ver Imagen')
                     ->modalWidth('lg')
                     ->modalCloseButton(false),
-                Tables\Actions\EditAction::make(), // Mantén la acción de edición si es necesaria
+                EditAction::make()
+                    ->hidden(fn (RechargeRequest $record) => in_array($record->status, ['approved', 'rejected'])), // Oculta la acción de edición si el estado es 'approved' o 'rejected'
                 Tables\Actions\Action::make('approve')
                     ->label('Aprobar')
                     ->color('success')
@@ -105,5 +111,14 @@ class RechargeRequestResource extends Resource
             'create' => Pages\CreateRechargeRequest::route('/create'),
             'edit' => Pages\EditRechargeRequest::route('/{record}/edit'),
         ];
+    }
+
+    protected static function booted()
+    {
+        static::updating(function (RechargeRequest $rechargeRequest) {
+            if (in_array($rechargeRequest->getOriginal('status'), ['approved', 'rejected'])) {
+                throw new \Exception('No se puede modificar una solicitud aprobada o rechazada.');
+            }
+        });
     }
 }
