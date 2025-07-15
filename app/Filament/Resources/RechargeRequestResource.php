@@ -49,22 +49,23 @@ class RechargeRequestResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('Usuario'),
-                Tables\Columns\TextColumn::make('amount')->money('CUP')->sortable(),
-                Tables\Columns\ImageColumn::make('image_path')->label('Imagen'),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'approved' => 'success',
-                        'rejected' => 'danger',
-                    }),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('amount')->money('CUP')->label('Monto'),
+                Tables\Columns\TextColumn::make('created_at')->label('Fecha de solicitud')->dateTime(),
+                Tables\Columns\ImageColumn::make('image_path')->label('Imagen')->disk('public'), // Columna para mostrar la imagen
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('viewImage') // Acción para ver la imagen
+                    ->icon('heroicon-o-eye')
+                    ->modalContent(function (RechargeRequest $record) {
+                        return view('filament.pages.view-image', ['imagePath' => $record->image_path]);
+                    })
+                    ->modalHeading('Ver Imagen')
+                    ->modalWidth('lg')
+                    ->modalCloseButton(false),
+                Tables\Actions\EditAction::make(), // Mantén la acción de edición si es necesaria
                 Tables\Actions\Action::make('approve')
                     ->label('Aprobar')
                     ->color('success')
