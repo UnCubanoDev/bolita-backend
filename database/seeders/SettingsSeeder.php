@@ -142,6 +142,14 @@ class SettingsSeeder extends Seeder
                 'description' => 'Pago por cada peso apostado en Corrido',
                 'group' => 'betting'
             ],
+            [
+                'key' => 'recharge_card_number',
+                'value' => '1234-5678-9012-3456', // Cambia por el número real o déjalo vacío
+                'type' => 'string',
+                'label' => 'Número de Tarjeta para Recargas',
+                'description' => 'Número de tarjeta o cuenta a la que se deben hacer las recargas',
+                'group' => 'recharge'
+            ],
         ];
 
         foreach ($settings as $setting) {
