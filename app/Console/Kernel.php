@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('import:lottery-results')
             ->dailyAt('20:00')
             ->timezone('America/Havana');
+
+        $schedule->command('games:create-daily')->dailyAt('00:01');
     }
 
     /**
