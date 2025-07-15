@@ -29,25 +29,33 @@ class BetController extends Controller
             'bet_details.*.amount' => 'required|numeric|min:1',
         ]);
 
-        // Buscar o crear el juego automáticamente
-        $game = \App\Models\Game::firstOrCreate([
+        $game = Game::firstOrCreate([
             'name' => $validated['game_name'],
             'date' => $validated['session'],
             'type' => $validated['variant'],
+        ], [
+            'is_active' => true,
         ]);
 
-        // Calcular el total apostado
         $totalAmount = collect($validated['bet_details'])->sum('amount');
+        $user = auth()->user();
 
-        // Crear la apuesta asociada al juego encontrado/creado
-        $bet = \App\Models\Bet::create([
-            'user_id' => auth()->id(),
-            'game_id' => $game->id, // Se asigna automáticamente, el usuario NO lo envía
+        if ($user->wallet_balance < $totalAmount) {
+            return response()->json(['error' => 'Saldo insuficiente'], 400);
+        }
+
+        // Descontar el saldo
+        $user->decrement('wallet_balance', $totalAmount);
+
+        $bet = Bet::create([
+            'user_id' => $user->id,
+            'game_id' => $game->id,
             'type' => $validated['variant'],
             'bet_details' => $validated['bet_details'],
-            'session_time' => $request->input('session_time', null), // si aplica
+            'session_time' => $request->input('session_time', null),
             'total_amount' => $totalAmount,
             'status' => 'pending',
+            // otros campos...
         ]);
 
         return response()->json(['bet' => $bet], 201);

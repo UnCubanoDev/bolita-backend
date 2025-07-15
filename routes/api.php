@@ -40,4 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Ruta para rechazar una recarga
     Route::post('/recharge/{rechargeRequest}/reject', [RechargeController::class, 'rejectRecharge']);
-}); 
+
+    // Ruta para solicitar extracción de saldo
+    Route::post('/withdrawals', [WithdrawalRequestController::class, 'store']);
+});
