@@ -17,7 +17,8 @@ class Bet extends Model
         'bet_details',
         'total_amount',
         'total_payout',
-        'status'
+        'status',
+        'game_id'
     ];
 
     protected $casts = [

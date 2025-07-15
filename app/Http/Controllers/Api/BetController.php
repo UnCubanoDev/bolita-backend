@@ -29,19 +29,27 @@ class BetController extends Controller
             'bet_details.*.amount' => 'required|numeric|min:1',
         ]);
 
-        // Buscar o crear el juego
-        $game = Game::firstOrCreate([
+        // Buscar o crear el juego automáticamente
+        $game = \App\Models\Game::firstOrCreate([
             'name' => $validated['game_name'],
             'date' => $validated['session'],
             'type' => $validated['variant'],
+        ], [
+            'is_active' => true,
         ]);
 
-        // Crear la apuesta
-        $bet = Bet::create([
+        // Calcular el total apostado
+        $totalAmount = collect($validated['bet_details'])->sum('amount');
+
+        // Crear la apuesta asociada al juego encontrado/creado
+        $bet = \App\Models\Bet::create([
             'user_id' => auth()->id(),
-            'game_id' => $game->id,
+            'game_id' => $game->id, // Se asigna automáticamente, el usuario NO lo envía
             'type' => $validated['variant'],
             'bet_details' => $validated['bet_details'],
+            'session_time' => $request->input('session_time', null), // si aplica
+            'total_amount' => $totalAmount,
+            'status' => 'pending',
         ]);
 
         return response()->json(['bet' => $bet], 201);
