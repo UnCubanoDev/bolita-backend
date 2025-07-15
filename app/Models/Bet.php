@@ -114,8 +114,8 @@ class Bet extends Model
                     $totalPayout += $bet['amount'] * $payoutMultiplier;
                 }
             }
-        } elseif ($this->type === 'corrido') {
-            $payoutMultiplier = (float) Setting::get('payout_corrido', 20);
+        } elseif ($this->type === 'parle') {
+            $payoutMultiplier = (float) Setting::get('payout_parle', 200);
             // Tomar los dos primeros y dos últimos dígitos del pick4
             if (strlen($winningNumber) === 4) {
                 $firstTwo = substr($winningNumber, 0, 2);
@@ -126,6 +126,37 @@ class Bet extends Model
                     if ($bet['number'] === $combo1 || $bet['number'] === $combo2) {
                         $totalPayout += $bet['amount'] * $payoutMultiplier;
                     }
+                }
+            }
+        } elseif ($this->type === 'corrido') {
+            $payoutMultiplier = (float) Setting::get('payout_corrido', 20); // Ajusta el payout si es necesario
+            if (strlen($winningNumber) === 4) {
+                $firstTwo = substr($winningNumber, 0, 2);
+                $lastTwo = substr($winningNumber, -2);
+
+                $foundFirst = false;
+                $foundLast = false;
+                $amountFirst = 0;
+                $amountLast = 0;
+
+                foreach ($this->bet_details as $bet) {
+                    if ($bet['number'] === $firstTwo) {
+                        $foundFirst = true;
+                        $amountFirst += $bet['amount'];
+                    }
+                    if ($bet['number'] === $lastTwo) {
+                        $foundLast = true;
+                        $amountLast += $bet['amount'];
+                    }
+                }
+
+                if ($foundFirst && $foundLast) {
+                    // Si ambos existen, se multiplica por 2
+                    $totalPayout += ($amountFirst + $amountLast) * $payoutMultiplier * 2;
+                } elseif ($foundFirst) {
+                    $totalPayout += $amountFirst * $payoutMultiplier;
+                } elseif ($foundLast) {
+                    $totalPayout += $amountLast * $payoutMultiplier;
                 }
             }
         } else {

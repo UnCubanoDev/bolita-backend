@@ -70,9 +70,9 @@ class Game extends Model
     public static function getAllowedGames(): array
     {
         return [
-            ['name' => 'Georgia Lottery', 'variants' => ['pick3', 'pick4']],
-            ['name' => 'Florida Lottery', 'variants' => ['pick3', 'pick4']],
-            ['name' => 'New York Lottery', 'variants' => ['pick3', 'pick4']],
+            ['name' => 'Georgia Lottery', 'variants' => ['pick3', 'pick4', 'fijo', 'corrido']],
+            ['name' => 'Florida Lottery', 'variants' => ['pick3', 'pick4', 'fijo', 'corrido']],
+            ['name' => 'New York Lottery', 'variants' => ['pick3', 'pick4', 'fijo', 'corrido']],
         ];
     }
 }
