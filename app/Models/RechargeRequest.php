@@ -14,4 +14,8 @@ class RechargeRequest extends Model
     ];
 
     // ... otras relaciones y métodos del modelo
+    public function user()
+   {
+       return $this->belongsTo(User::class);
+   }
 }

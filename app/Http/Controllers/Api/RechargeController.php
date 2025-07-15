@@ -98,4 +98,26 @@ class RechargeController extends Controller
             'recharge_request' => $rechargeRequest
         ], 201);
     }
+    public function approveRecharge(Request $request, $rechargeRequestId)
+   {
+       $rechargeRequest = RechargeRequest::find($rechargeRequestId);
+
+       if (!$rechargeRequest) {
+           return response()->json(['message' => 'Solicitud de recarga no encontrada'], 404);
+       }
+
+       $user = $rechargeRequest->user;
+
+       if (!$user) {
+           return response()->json(['message' => 'Usuario no encontrado'], 404);
+       }
+
+       // Incrementar el saldo del usuario
+       $user->increment('wallet_balance', $rechargeRequest->amount);
+
+       // Marcar la solicitud como aprobada
+       $rechargeRequest->update(['status' => 'approved']);
+
+       return response()->json(['message' => 'Recarga aprobada con éxito']);
+   }
 }
