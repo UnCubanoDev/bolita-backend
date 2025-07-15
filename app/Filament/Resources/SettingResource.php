@@ -69,15 +69,11 @@ class SettingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('key')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('label'),
                 Tables\Columns\TextColumn::make('value')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('group'),
-                Tables\Columns\TextColumn::make('label'),
-                Tables\Columns\TextColumn::make('card_number')
-                    ->label('Número de Tarjeta'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('group')
