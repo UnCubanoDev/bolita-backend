@@ -34,8 +34,6 @@ class BetController extends Controller
             'name' => $validated['game_name'],
             'date' => $validated['session'],
             'type' => $validated['variant'],
-        ], [
-            'is_active' => true,
         ]);
 
         // Crear la apuesta
