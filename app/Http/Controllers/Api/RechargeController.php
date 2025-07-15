@@ -121,8 +121,29 @@ class RechargeController extends Controller
     $user->increment('wallet_balance', $rechargeRequest->amount);
 
     // Marcar la solicitud como aprobada
-    $rechargeRequest->update(['status' => 'approved']);
+    $rechargeRequest->status = 'approved';
+    $rechargeRequest->save();
 
     return response()->json(['message' => 'Recarga aprobada con éxito']);
+}
+
+public function rejectRecharge(Request $request, $rechargeRequestId)
+{
+    $rechargeRequest = RechargeRequest::find($rechargeRequestId);
+
+    if (!$rechargeRequest) {
+        return response()->json(['message' => 'Solicitud de recarga no encontrada'], 404);
+    }
+
+    // Verificar si la solicitud ya ha sido rechazada
+    if ($rechargeRequest->status === 'rejected') {
+        return response()->json(['message' => 'La solicitud ya ha sido rechazada'], 400);
+    }
+
+    // Marcar la solicitud como rechazada
+    $rechargeRequest->status = 'rejected';
+    $rechargeRequest->save();
+
+    return response()->json(['message' => 'Recarga rechazada con éxito']);
 }
 }

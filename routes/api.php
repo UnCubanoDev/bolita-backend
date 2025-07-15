@@ -34,4 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Ruta para solicitar recarga
     Route::post('/recharge', [RechargeController::class, 'store']);
+
+    // Ruta para aprobar una recarga
+    Route::post('/recharge/{rechargeRequest}/approve', [RechargeController::class, 'approveRecharge']);
+
+    // Ruta para rechazar una recarga
+    Route::post('/recharge/{rechargeRequest}/reject', [RechargeController::class, 'rejectRecharge']);
 }); 

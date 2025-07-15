@@ -10,6 +10,7 @@ class RechargeRequest extends Model
         'user_id',
         'amount',
         'image_path',
+        'status'
         // otros campos que necesites
     ];
 
