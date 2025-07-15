@@ -80,7 +80,7 @@ class RechargeRequestResource extends Resource
                         $record->update(['status' => 'approved']);
                         $record->user->increment('wallet_balance', $record->amount);
                     })
-                    ->visible(fn (RechargeRequest $record): bool => $record->status === 'pending'),
+                    ->hidden(fn (RechargeRequest $record) => in_array($record->status, ['approved', 'rejected'])), // Oculta la acción si el estado es 'approved' o 'rejected'
                 Tables\Actions\Action::make('reject')
                     ->label('Rechazar')
                     ->color('danger')
@@ -88,7 +88,7 @@ class RechargeRequestResource extends Resource
                     ->action(function (RechargeRequest $record) {
                         $record->update(['status' => 'rejected']);
                     })
-                    ->visible(fn (RechargeRequest $record): bool => $record->status === 'pending'),
+                    ->hidden(fn (RechargeRequest $record) => in_array($record->status, ['approved', 'rejected'])), // Oculta la acción si el estado es 'approved' o 'rejected'
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
