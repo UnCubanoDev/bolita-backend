@@ -9,6 +9,8 @@ class SettingsSeeder extends Seeder
 {
     public function run(): void
     {
+        \App\Models\Setting::truncate(); // Elimina todos los registros
+
         $settings = [
             // Horarios generales para Georgia
             [
@@ -153,7 +155,7 @@ class SettingsSeeder extends Seeder
         ];
 
         foreach ($settings as $setting) {
-            Setting::updateOrCreate(
+            \App\Models\Setting::updateOrCreate(
                 ['key' => $setting['key']],
                 $setting
             );
