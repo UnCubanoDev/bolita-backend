@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Filters\SelectFilter;
 
 class RechargeRequestResource extends Resource
 {
@@ -59,7 +60,13 @@ class RechargeRequestResource extends Resource
                 Tables\Columns\ImageColumn::make('image_path')->label('Imagen')->disk('public'), // Columna para mostrar la imagen
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pendiente',
+                        'approved' => 'Aprobada',
+                        'rejected' => 'Rechazada',
+                    ])
+                    ->default('pending'), // Filtro por defecto para mostrar solo las solicitudes pendientes
             ])
             ->actions([
                 Tables\Actions\Action::make('viewImage') // Acción para ver la imagen
@@ -77,8 +84,11 @@ class RechargeRequestResource extends Resource
                     ->color('success')
                     ->icon('heroicon-o-check')
                     ->action(function (RechargeRequest $record) {
-                        $record->update(['status' => 'approved']);
+                        if ($record->status === 'approved') {
+                            return;
+                        }
                         $record->user->increment('wallet_balance', $record->amount);
+                        $record->update(['status' => 'approved']);
                     })
                     ->hidden(fn (RechargeRequest $record) => in_array($record->status, ['approved', 'rejected'])), // Oculta la acción si el estado es 'approved' o 'rejected'
                 Tables\Actions\Action::make('reject')
@@ -86,6 +96,9 @@ class RechargeRequestResource extends Resource
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
                     ->action(function (RechargeRequest $record) {
+                        if ($record->status === 'rejected') {
+                            return;
+                        }
                         $record->update(['status' => 'rejected']);
                     })
                     ->hidden(fn (RechargeRequest $record) => in_array($record->status, ['approved', 'rejected'])), // Oculta la acción si el estado es 'approved' o 'rejected'
@@ -120,5 +133,10 @@ class RechargeRequestResource extends Resource
                 throw new \Exception('No se puede modificar una solicitud aprobada o rechazada.');
             }
         });
+    }
+
+    public static function query(): Builder
+    {
+        return parent::query()->whereNotIn('status', ['approved', 'rejected']);
     }
 }
