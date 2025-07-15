@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RechargeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SettingController;
 
 // Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
@@ -43,4 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Ruta para solicitar extracción de saldo
     Route::post('/withdrawals', [WithdrawalRequestController::class, 'store']);
+
+    // Ruta para obtener todas las configuraciones
+    Route::get('/settings', [SettingController::class, 'index']);
 });

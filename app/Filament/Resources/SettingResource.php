@@ -58,6 +58,10 @@ class SettingResource extends Resource
                         'system' => 'Sistema',
                     ])
                     ->required(),
+                Forms\Components\TextInput::make('card_number')
+                    ->label('Número de Tarjeta')
+                    ->maxLength(30)
+                    ->required(false),
             ]);
     }
 
@@ -72,6 +76,8 @@ class SettingResource extends Resource
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('group'),
                 Tables\Columns\TextColumn::make('label'),
+                Tables\Columns\TextColumn::make('card_number')
+                    ->label('Número de Tarjeta'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('group')
