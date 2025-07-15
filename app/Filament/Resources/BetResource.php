@@ -87,7 +87,7 @@ class BetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('Usuario'),
-                Tables\Columns\TextColumn::make('game')->label('Juego'),
+                Tables\Columns\TextColumn::make('game.name')->label('Juego'),
                 Tables\Columns\TextColumn::make('type')->label('Tipo')->sortable(),
                 Tables\Columns\TextColumn::make('session_time')->label('Sesión')->formatStateUsing(fn (string $state): string =>
                     $state === 'morning' ? 'Mañana' : 'Tarde'
