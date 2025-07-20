@@ -28,14 +28,15 @@ class GameResource extends Resource
                     'New York' => 'New York',
                     'Florida' => 'Florida',
                 ])->required(),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        'pick3' => 'Pick 3',
-                        'pick4' => 'Pick 4',
-                    ])
-                    ->required(),
                 Forms\Components\DatePicker::make('date')->required(),
-                Forms\Components\TextInput::make('winning_number'),
+                Forms\Components\TextInput::make('pick3_winning_number')
+                    ->label('Pick 3 - Número ganador')
+                    ->maxLength(3)
+                    ->nullable(),
+                Forms\Components\TextInput::make('pick4_winning_number')
+                    ->label('Pick 4 - Número ganador')
+                    ->maxLength(4)
+                    ->nullable(),
             ]);
     }
 
@@ -44,10 +45,9 @@ class GameResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('date')->date(),
-                Tables\Columns\TextColumn::make('winning_number')->label('Número Ganador'),
-                Tables\Columns\TextColumn::make('result_imported_at')->since(),
+                Tables\Columns\TextColumn::make('pick3_winning_number')->label('Pick 3'),
+                Tables\Columns\TextColumn::make('pick4_winning_number')->label('Pick 4'),
             ])
             ->filters([
                 //
