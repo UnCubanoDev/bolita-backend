@@ -48,27 +48,7 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $period = $request->input('period', 'weekly'); // Por defecto semanal
-
-        // Calcula el rango de fechas según el periodo
-        switch ($period) {
-            case 'monthly':
-                $from = Carbon::now()->startOfMonth();
-                break;
-            case 'yearly':
-                $from = Carbon::now()->startOfYear();
-                break;
-            case 'weekly':
-            default:
-                $from = Carbon::now()->startOfWeek();
-                break;
-        }
-
-        $to = Carbon::now()->endOfDay();
-
-        $referrals = $user->referredUsers()->with(['bets' => function ($query) use ($from, $to) {
-            $query->whereBetween('created_at', [$from, $to]);
-        }])->get();
+        $referrals = $user->referredUsers()->with('bets')->get();
 
         $referralPercentage = 0.05; // 5%
 
