@@ -11,7 +11,6 @@ class Game extends Model
         'type',
         'date',
         'winning_number',
-        'is_active',
     ];
 
     protected static function booted()
