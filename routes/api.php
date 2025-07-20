@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BetController;
 use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RechargeController;
+use App\Http\Controllers\Api\WithdrawalRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SettingController;
 
@@ -20,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/wallet', [UserController::class, 'getWallet']);
     Route::get('/user/bets', [UserController::class, 'getBets']);
     Route::get('/user/referrals', [UserController::class, 'getReferrals']);
+    Route::get('/user/my-referrals', [UserController::class, 'myReferrals']);
 
     // Apuestas
     Route::post('/bets', [BetController::class, 'store']);
@@ -42,9 +44,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ruta para rechazar una recarga
     Route::post('/recharge/{rechargeRequest}/reject', [RechargeController::class, 'rejectRecharge']);
 
-    // Ruta para solicitar extracción de saldo
+    // Rutas para extracciones
     Route::post('/withdrawals', [WithdrawalRequestController::class, 'store']);
+    Route::get('/withdrawals', [WithdrawalRequestController::class, 'index']);
+    Route::get('/withdrawals/{id}', [WithdrawalRequestController::class, 'show']);
+    Route::post('/withdrawals/{id}/approve', [WithdrawalRequestController::class, 'approve']);
+    Route::post('/withdrawals/{id}/reject', [WithdrawalRequestController::class, 'reject']);
 
     // Ruta para obtener todas las configuraciones
     Route::get('/settings', [SettingController::class, 'index']);
+
 });

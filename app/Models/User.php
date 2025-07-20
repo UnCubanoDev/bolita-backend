@@ -26,6 +26,8 @@ class User extends Authenticatable
         'my_referral_code',
         'referrer_code',
         'wallet_balance',
+        'frozen_balance',
+        'available_balance',
     ];
 
     /**
@@ -48,7 +50,53 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'wallet_balance' => 'decimal:2',
+            'frozen_balance' => 'decimal:2',
+            'available_balance' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Obtiene el saldo disponible (wallet_balance - frozen_balance)
+     */
+    public function getAvailableBalanceAttribute()
+    {
+        return $this->wallet_balance - $this->frozen_balance;
+    }
+
+    /**
+     * Congela un monto específico del saldo
+     */
+    public function freezeBalance($amount)
+    {
+        if ($this->wallet_balance < $amount) {
+            throw new \Exception('Saldo insuficiente para congelar');
+        }
+
+        $this->increment('frozen_balance', $amount);
+        return $this;
+    }
+
+    /**
+     * Descongela un monto específico del saldo
+     */
+    public function unfreezeBalance($amount)
+    {
+        if ($this->frozen_balance < $amount) {
+            throw new \Exception('Saldo congelado insuficiente para descongelar');
+        }
+
+        $this->decrement('frozen_balance', $amount);
+        return $this;
+    }
+
+    /**
+     * Libera completamente el saldo congelado
+     */
+    public function releaseFrozenBalance()
+    {
+        $this->update(['frozen_balance' => 0]);
+        return $this;
     }
 
     public function rechargeRequests()
@@ -56,8 +104,43 @@ class User extends Authenticatable
         return $this->hasMany(RechargeRequest::class);
     }
 
+    public function withdrawalRequests()
+    {
+        return $this->hasMany(WithdrawalRequest::class);
+    }
+
     public function bets(): HasMany
     {
         return $this->hasMany(Bet::class);
+    }
+
+    public function referredUsers()
+    {
+        return $this->hasMany(User::class, 'referrer_code', 'my_referral_code');
+    }
+
+    public function myReferrals()
+    {
+        $user = auth()->user();
+
+        $referrals = $user->referredUsers()->with('bets')->get();
+
+        $referralPercentage = 0.05; // 5%
+
+        $data = $referrals->map(function ($referral) use ($referralPercentage) {
+            $totalWinnings = $referral->bets->sum('total_payout');
+            $myEarnings = $totalWinnings * $referralPercentage;
+
+            return [
+                'referral_id' => $referral->id,
+                'referral_name' => $referral->name,
+                'total_winnings' => $totalWinnings,
+                'my_earnings' => $myEarnings,
+            ];
+        });
+
+        return response()->json([
+            'referrals' => $data,
+        ]);
     }
 }

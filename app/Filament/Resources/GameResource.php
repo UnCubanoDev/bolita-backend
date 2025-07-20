@@ -32,8 +32,6 @@ class GameResource extends Resource
                     ->options([
                         'pick3' => 'Pick 3',
                         'pick4' => 'Pick 4',
-                        'fijo' => 'Fijo',
-                        'corrido' => 'Corrido',
                     ])
                     ->required(),
                 Forms\Components\DatePicker::make('date')->required(),

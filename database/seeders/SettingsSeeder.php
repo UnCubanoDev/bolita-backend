@@ -145,6 +145,14 @@ class SettingsSeeder extends Seeder
                 'group' => 'betting'
             ],
             [
+                'key' => 'payout_parle',
+                'value' => '500',
+                'type' => 'number',
+                'label' => 'Multiplicador pago Parle',
+                'description' => 'Pago por cada peso apostado en Parle',
+                'group' => 'betting'
+            ],
+            [
                 'key' => 'recharge_card_number',
                 'value' => '1234-5678-9012-3456', // Cambia por el número real o déjalo vacío
                 'type' => 'string',
