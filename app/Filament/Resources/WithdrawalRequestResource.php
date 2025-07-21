@@ -33,6 +33,12 @@ class WithdrawalRequestResource extends Resource
                 Forms\Components\TextInput::make('amount')
                     ->label('Monto')
                     ->disabled(),
+                Forms\Components\TextInput::make('card_number')
+                    ->label('Número de Tarjeta')
+                    ->disabled(),
+                Forms\Components\TextInput::make('phone_number')
+                    ->label('Teléfono')
+                    ->disabled(),
                 Forms\Components\Textarea::make('note')
                     ->label('Nota')
                     ->disabled(),
@@ -54,6 +60,8 @@ class WithdrawalRequestResource extends Resource
                 TextColumn::make('id'),
                 TextColumn::make('user.name')->label('Usuario'),
                 TextColumn::make('amount')->label('Monto'),
+                TextColumn::make('card_number')->label('Tarjeta'),
+                TextColumn::make('phone_number')->label('Teléfono'),
                 TextColumn::make('status')->label('Estado'),
                 TextColumn::make('note')->label('Nota')->limit(30),
                 TextColumn::make('created_at')->label('Fecha')->dateTime(),

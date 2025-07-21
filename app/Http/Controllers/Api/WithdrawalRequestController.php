@@ -12,6 +12,8 @@ class WithdrawalRequestController extends Controller
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
+            'card_number' => 'required|string|max:30',
+            'phone_number' => 'required|string|max:20',
             'note' => 'nullable|string',
         ]);
 
@@ -35,7 +37,9 @@ class WithdrawalRequestController extends Controller
             // Crear la solicitud de extracción
         $withdrawal = WithdrawalRequest::create([
             'user_id' => $user->id,
-                'amount' => $amount,
+            'amount' => $amount,
+            'card_number' => $validated['card_number'],
+            'phone_number' => $validated['phone_number'],
             'note' => $validated['note'] ?? null,
             'status' => 'pending',
         ]);
