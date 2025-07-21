@@ -29,6 +29,7 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('my_referral_code')->required()->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('referrer_code'),
                 Forms\Components\TextInput::make('wallet_balance')->numeric()->default(0),
+                Forms\Components\TextInput::make('available_balance')->numeric()->default(0),
                 Forms\Components\TextInput::make('password')->password()->required(fn ($record) => $record === null),
             ]);
     }
@@ -42,7 +43,8 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('phone'),
                 Tables\Columns\TextColumn::make('my_referral_code')->label('Código de Referido'),
                 Tables\Columns\TextColumn::make('referrer_code')->label('Código del Referente'),
-                Tables\Columns\TextColumn::make('wallet_balance')->money('CUP')->sortable(),
+                Tables\Columns\TextColumn::make('wallet_balance')->money('CUP')->sortable()->label('Saldo'),
+                Tables\Columns\TextColumn::make('available_balance')->money('CUP')->sortable()->label('Saldo Disponible'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('with_balance')
