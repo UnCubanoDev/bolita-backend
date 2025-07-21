@@ -38,9 +38,9 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('email')->searchable(),
-                Tables\Columns\TextColumn::make('phone'),
+                Tables\Columns\TextColumn::make('name')->searchable()->label('Nombre'),
+                // Tables\Columns\TextColumn::make('email')->searchable(),
+                // Tables\Columns\TextColumn::make('phone'),
                 Tables\Columns\TextColumn::make('my_referral_code')->label('Código de Referido'),
                 Tables\Columns\TextColumn::make('referrer_code')->label('Código del Referente'),
                 Tables\Columns\TextColumn::make('wallet_balance')->money('CUP')->sortable()->label('Saldo'),
