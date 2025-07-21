@@ -76,9 +76,6 @@ class BetController extends Controller
                     $game = Game::firstOrCreate([
                         'name' => $gameName,
                         'date' => $nextSession,
-                        'type' => $variant,
-                    ], [
-                        'is_active' => true,
                     ]);
 
                     $message = "Apuesta registrada para la siguiente sesión ({$nextSession}) - Fuera del horario de apuestas";
@@ -86,10 +83,7 @@ class BetController extends Controller
                     // Antes del horario de mañana, usar sesión actual
                     $game = Game::firstOrCreate([
                         'name' => $gameName,
-                        'date' => $validated['session'],
-                        'type' => $variant,
-                    ], [
-                        'is_active' => true,
+                        'date' => $validated['session']
                     ]);
 
                     $message = "Apuesta registrada para la sesión actual - Horario de apuestas mañana: {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}";
@@ -98,9 +92,6 @@ class BetController extends Controller
                     $game = Game::firstOrCreate([
                         'name' => $gameName,
                         'date' => $validated['session'],
-                        'type' => $variant,
-                    ], [
-                        'is_active' => true,
                     ]);
 
                     $message = "Apuesta registrada para la sesión actual - Horario de apuestas tarde: {$eveningStart->format('H:i')} - {$eveningEnd->format('H:i')}";
@@ -147,10 +138,7 @@ class BetController extends Controller
             // Dentro del horario de apuestas (mañana o tarde)
             $game = Game::firstOrCreate([
                 'name' => $gameName,
-                'date' => $validated['session'],
-                'type' => $variant,
-            ], [
-                'is_active' => true,
+                'date' => $validated['session']
             ]);
 
             $message = "Apuesta registrada para la sesión actual ({$period})";
@@ -158,10 +146,7 @@ class BetController extends Controller
             // Si no hay configuración de horario, usar la sesión actual
             $game = Game::firstOrCreate([
                 'name' => $gameName,
-                'date' => $validated['session'],
-                'type' => $variant,
-            ], [
-                'is_active' => true,
+                'date' => $validated['session']
             ]);
 
             $message = "Apuesta registrada (sin configuración de horario)";
