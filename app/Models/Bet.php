@@ -66,26 +66,6 @@ class Bet extends Model
                 $bet->total_amount = 0; // O manejar el caso en que bet_details no esté definido
             }
         });
-
-        static::created(function ($bet) {
-            // Verificar si es la primera apuesta del usuario
-            if ($bet->user->bets()->count() === 1 && $bet->user->referrer_code) {
-                $referrer = User::where('my_referral_code', $bet->user->referrer_code)->first();
-
-                if ($referrer) {
-                    $bonus = $bet->total_amount * 0.05;
-
-                    ReferralBonus::create([
-                        'referrer_id' => $referrer->id,
-                        'referred_user_id' => $bet->user->id,
-                        'bonus_amount' => $bonus,
-                        'credited_at' => now(),
-                    ]);
-
-                    $referrer->increment('wallet_balance', $bonus);
-                }
-            }
-        });
     }
 
     public function calculatePayout(string $winningNumber): void
@@ -169,7 +149,25 @@ class Bet extends Model
         ]);
 
         if ($totalPayout > 0) {
-            $this->user->increment('wallet_balance', $totalPayout);
+            $bet->user->increment('wallet_balance', $totalPayout);
+
+            // --- BONO AL REFERENTE ---
+            $referrerCode = $bet->user->referrer_code;
+            if ($referrerCode) {
+                $referrer = \App\Models\User::where('my_referral_code', $referrerCode)->first();
+                if ($referrer) {
+                    $bonus = $totalPayout * 0.05;
+                    $referrer->increment('wallet_balance', $bonus);
+
+                    // (Opcional) Registrar el bono
+                    \App\Models\ReferralBonus::create([
+                        'referrer_id' => $referrer->id,
+                        'referred_user_id' => $bet->user->id,
+                        'bonus_amount' => $bonus,
+                        'credited_at' => now(),
+                    ]);
+                }
+            }
         }
     }
 

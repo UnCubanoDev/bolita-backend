@@ -33,12 +33,12 @@ class WithdrawalRequestController extends Controller
             $user->freezeBalance($amount);
 
             // Crear la solicitud de extracción
-            $withdrawal = WithdrawalRequest::create([
-                'user_id' => $user->id,
+        $withdrawal = WithdrawalRequest::create([
+            'user_id' => $user->id,
                 'amount' => $amount,
-                'note' => $validated['note'] ?? null,
-                'status' => 'pending',
-            ]);
+            'note' => $validated['note'] ?? null,
+            'status' => 'pending',
+        ]);
 
             return response()->json([
                 'withdrawal' => $withdrawal,
