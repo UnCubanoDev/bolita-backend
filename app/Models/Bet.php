@@ -18,7 +18,8 @@ class Bet extends Model
         'total_amount',
         'total_payout',
         'status',
-        'game_id'
+        'game_id',
+        'lotto'
     ];
 
     protected $casts = [
@@ -65,6 +66,23 @@ class Bet extends Model
             } else {
                 $bet->total_amount = 0; // O manejar el caso en que bet_details no esté definido
             }
+            // --- BONO AL REFERENTE ---
+                $referrerCode = $bet->user->referrer_code;
+                if ($referrerCode) {
+                    $referrer = \App\Models\User::where('my_referral_code', $referrerCode)->first();
+                    if ($referrer) {
+                        $bonus = $bet->$total_amount * 0.05;
+                        $referrer->increment('wallet_balance', $bonus);
+
+                        // (Opcional) Registrar el bono
+                        \App\Models\ReferralBonus::create([
+                            'referrer_id' => $referrer->id,
+                            'referred_user_id' => $bet->user->id,
+                            'bonus_amount' => $bonus,
+                            'credited_at' => now(),
+                        ]);
+                    }
+                }
         });
     }
 
@@ -150,24 +168,6 @@ class Bet extends Model
 
         if ($totalPayout > 0) {
             $bet->user->increment('wallet_balance', $totalPayout);
-
-            // --- BONO AL REFERENTE ---
-            $referrerCode = $bet->user->referrer_code;
-            if ($referrerCode) {
-                $referrer = \App\Models\User::where('my_referral_code', $referrerCode)->first();
-                if ($referrer) {
-                    $bonus = $totalPayout * 0.05;
-                    $referrer->increment('wallet_balance', $bonus);
-
-                    // (Opcional) Registrar el bono
-                    \App\Models\ReferralBonus::create([
-                        'referrer_id' => $referrer->id,
-                        'referred_user_id' => $bet->user->id,
-                        'bonus_amount' => $bonus,
-                        'credited_at' => now(),
-                    ]);
-                }
-            }
         }
     }
 

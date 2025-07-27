@@ -122,6 +122,7 @@ class BetController extends Controller
                     'session_time' => $request->input('session_time', null),
                     'total_amount' => $totalAmount,
                     'status' => 'pending',
+                    'lotto' => $gameName,
                 ]);
 
                 return response()->json([
@@ -177,6 +178,7 @@ class BetController extends Controller
             'session_time' => $request->input('session_time', null),
             'total_amount' => $totalAmount,
             'status' => 'pending',
+            'lotto' => $gameName,
         ]);
 
         return response()->json([

@@ -34,6 +34,8 @@ class RechargeRequestResource extends Resource
                     ->numeric()
                     ->required()
                     ->disabled(fn ($record) => in_array($record?->status, ['approved', 'rejected'])), // Deshabilita el campo si el estado es 'approved' o 'rejected'
+                TextInput::make('transfer_id')
+                    ->required(),
                 Forms\Components\FileUpload::make('image_path')
                     ->image()
                     ->directory('recharge_images')
@@ -56,6 +58,7 @@ class RechargeRequestResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('Usuario'),
                 Tables\Columns\TextColumn::make('amount')->money('CUP')->label('Monto'),
+                Tables\Columns\TextColumn::make('transfer_id')->label('ID'),
                 Tables\Columns\TextColumn::make('created_at')->label('Fecha de solicitud')->dateTime(),
                 Tables\Columns\ImageColumn::make('image_path')->label('Imagen')->disk('public'), // Columna para mostrar la imagen
             ])

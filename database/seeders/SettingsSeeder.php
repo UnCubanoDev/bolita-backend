@@ -160,6 +160,14 @@ class SettingsSeeder extends Seeder
                 'description' => 'Número de tarjeta o cuenta a la que se deben hacer las recargas',
                 'group' => 'recharge'
             ],
+            [
+                'key' => 'phone_number',
+                'value' => '+15085589065', // Cambia por el número real o déjalo vacío
+                'type' => 'string',
+                'label' => 'Número de Teléfono para Recargas',
+                'description' => 'Número de teléfono al cual se debe confirmar las recargas',
+                'group' => 'recharge'
+            ],
         ];
 
         foreach ($settings as $setting) {
