@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('recharge_requests', function (Blueprint $table) {
-            $table->string('transfer_id');
+            $table->string('transfer_id')->nullable();
         });
     }
 
