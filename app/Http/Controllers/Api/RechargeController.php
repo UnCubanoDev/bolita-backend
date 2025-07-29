@@ -35,7 +35,7 @@ class RechargeController extends Controller
             'user_id' => $request->user_id,
             'amount' => $request->amount,
             'image_path' => $imagePath,
-            'transfer_id' => $request->$transfer_id,
+            'transfer_id' => $request->transfer_id,
         ]);
 
         return response()->json([
