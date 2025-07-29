@@ -342,7 +342,7 @@
             <h2>Descarga la App LottoGame Hoy</h2>
             <p>Disponible para Android. ¡Empieza a jugar en minutos!</p>
             <div class="app-buttons">
-                <a href="#" class="app-button">
+                <a href="{{ route('download.apk') }}" class="app-button">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Google_Play_2022_logo.svg/512px-Google_Play_2022_logo.svg.png?20220726170516" alt="Google Play">
                 </a>
             </div>
@@ -353,10 +353,8 @@
         <div class="container">
             <div class="logo">Lotto<span>Game</span></div>
             <div class="footer-links">
-                {{-- <a href="{{ route('terms') }}">Términos y Condiciones</a>
                 <a href="{{ route('privacy') }}">Política de Privacidad</a>
-                <a href="{{ route('support') }}">Soporte</a>
-                <a href="{{ route('faq') }}">Preguntas Frecuentes</a> --}}
+                <a href="{{ route('faq') }}">Preguntas Frecuentes</a>
             </div>
             <p class="disclaimer">
                 LottoGame es una plataforma para apuestas de lotería oficiales. Debes tener al menos 18 años para participar. Juega responsablemente. LottoGame no garantiza ganar premios y no está afiliado a las loterías estatales de New York, Georgia o Florida.
