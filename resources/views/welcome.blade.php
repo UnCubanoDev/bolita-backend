@@ -342,10 +342,13 @@
             <h2>Descarga la App LottoGame Hoy</h2>
             <p>Disponible para Android. ¡Empieza a jugar en minutos!</p>
             <div class="app-buttons">
-                <a href="{{ route('download.apk') }}" class="app-button">
+                <a href="{{ route('download.apk') }}" class="app-button" download="LottoGame.apk" id="download-apk">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Google_Play_2022_logo.svg/512px-Google_Play_2022_logo.svg.png?20220726170516" alt="Google Play">
                 </a>
             </div>
+            <div style="margin-top: 1rem; font-size: 0.9rem; color: #ffffffaa;">
+            <p>Después de descargar, ve a <strong>Ajustes > Seguridad</strong> y activa <strong>"Orígenes desconocidos"</strong> para instalar.</p>
+        </div>
         </div>
     </section>
 
@@ -362,5 +365,16 @@
             <p>© {{ date('Y') }} LottoGame. Todos los derechos reservados.</p>
         </div>
     </footer>
+    <script>
+        document.getElementById('download-apk').addEventListener('click', function(e) {
+            if (/Android/i.test(navigator.userAgent)) {
+                e.preventDefault();
+                window.location.href = 'intent://' + window.location.hostname + '/descargas/lottogame.apk#Intent;action=android.intent.action.VIEW;type=application/vnd.android.package-archive;end';
+                setTimeout(function() {
+                    window.location.href = '{{ route('download.apk') }}';
+                }, 200);
+            }
+        });
+    </script>
 </body>
 </html>

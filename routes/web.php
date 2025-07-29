@@ -16,8 +16,9 @@ Route::get('/faq', function () {
     config(['sanctum.middleware' => []]);
     return view('faq');
 })->name('faq');
-
-Route::get('/download-apk', function() {
-    $path = resource_path('app/Lotto Game.apk');
-    return response()->download($path, 'LottoGame.apk');
+Route::get('/download-apk', function () {
+    $file = public_path('download/lottogame.apk');
+    return response()->download($file, 'LottoGame.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive',
+    ]);
 })->name('download.apk');
