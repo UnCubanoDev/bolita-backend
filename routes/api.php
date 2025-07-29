@@ -12,6 +12,10 @@ use App\Http\Controllers\Api\SettingController;
 // Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/', function () {
+    config(['sanctum.middleware' => []]);
+    return view('welcome');
+})->name('home');
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
