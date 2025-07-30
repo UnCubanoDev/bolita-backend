@@ -6,6 +6,7 @@ use App\Services\BetValidationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Setting;
+use App\Exceptions\BettingTimeException;
 
 class Bet extends Model
 {
@@ -46,7 +47,7 @@ class Bet extends Model
             } elseif ($currentTime <= $eveningEnd) {
                 $bet->session_time = 'evening';
             } else {
-                throw new \Exception(
+                throw new BettingTimeException(
                     "No se pueden realizar apuestas en este momento. " .
                     $validationService->getNextValidTime()
                 );
@@ -54,7 +55,7 @@ class Bet extends Model
 
             // Validar que se puede realizar la apuesta
             if (!$validationService->canPlaceBet($bet->type, $bet->session_time)) {
-                throw new \Exception(
+                throw new BettingTimeException(
                     "No se pueden realizar apuestas para la sesión {$bet->session_time} en este momento. " .
                     $validationService->getNextValidTime()
                 );
