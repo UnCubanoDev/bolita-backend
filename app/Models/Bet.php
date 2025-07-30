@@ -47,18 +47,12 @@ class Bet extends Model
             } elseif ($currentTime <= $eveningEnd) {
                 $bet->session_time = 'evening';
             } else {
-                throw new BettingTimeException(
-                    "No se pueden realizar apuestas en este momento. " .
-                    $validationService->getNextValidTime()
-                );
-            }
-
-            // Validar que se puede realizar la apuesta
-            if (!$validationService->canPlaceBet($bet->type, $bet->session_time)) {
-                throw new BettingTimeException(
-                    "No se pueden realizar apuestas para la sesión {$bet->session_time} en este momento. " .
-                    $validationService->getNextValidTime()
-                );
+                $nextSession = $validationService->getNextValidTime();
+                if ($nextSession <= $morningEnd) {
+                    $bet->session_time = 'morning';
+                } elseif ($nextSession <= $eveningEnd) {
+                    $bet->session_time = 'evening';
+                }
             }
 
             // Calcular el monto total sumando los montos de bet_details

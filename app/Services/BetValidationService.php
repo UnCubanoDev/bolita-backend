@@ -56,19 +56,19 @@ class BetValidationService
         $eveningStart = Setting::get('evening_session_start', '14:00');
 
         if ($currentTime < $morningStart) {
-            return "La próxima sesión comienza a las " . $morningStart;
+            return $morningStart;
         }
 
         if ($currentTime > Setting::get('morning_session_end', '11:45') &&
             $currentTime < $eveningStart) {
-            return "La próxima sesión comienza a las " . $eveningStart;
+            return $eveningStart;
         }
 
         if ($currentTime > Setting::get('evening_session_end', '20:45')) {
-            return "La próxima sesión comienza mañana a las " . $morningStart;
+            return $morningStart;
         }
 
-        return "Las apuestas están abiertas en este momento";
+        return null;
     }
 
     public function validateWinningNumber(string $winningNumber, string $sessionTime): bool
@@ -89,4 +89,22 @@ class BetValidationService
 
         return false;
     }
+
+    public function getNextAvailableSession(): ?string
+    {
+        $now = Carbon::now('America/Havana');
+        $cutoffTime = Carbon::createFromTime(21, 0, 0, 'America/Havana'); // 9:00 PM
+        $startTime = Carbon::createFromTime(6, 0, 0, 'America/Havana');   // 6:00 AM
+
+        if ($now->lessThan($startTime)) {
+            return $now->copy()->setTime(6, 0)->format('H:i');
+        }
+
+        if ($now->greaterThanOrEqualTo($cutoffTime)) {
+            return $now->copy()->addDay()->setTime(6, 0)->format('H:i');
+        }
+
+        return null; // apuestas permitidas
+    }
+
 }
