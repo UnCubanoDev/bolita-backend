@@ -47,29 +47,29 @@ class BetValidationService
         return $currentTime >= $start && $currentTime <= $end;
     }
 
-    // public function getNextValidTime(): string
-    // {
-    //     $now = Carbon::now('America/Havana');
-    //     $currentTime = $now->format('H:i');
+    public function getNextValidTime(): string
+    {
+        $now = Carbon::now('America/Havana');
+        $currentTime = $now->format('H:i');
 
-    //     $morningStart = Setting::get('morning_session_start', '06:00');
-    //     $eveningStart = Setting::get('evening_session_start', '14:00');
+        $morningStart = Setting::get('morning_session_start', '06:00');
+        $eveningStart = Setting::get('evening_session_start', '14:00');
 
-    //     if ($currentTime < $morningStart) {
-    //         return "La próxima sesión comienza a las " . $morningStart;
-    //     }
+        if ($currentTime < $morningStart) {
+            return "La próxima sesión comienza a las " . $morningStart;
+        }
 
-    //     if ($currentTime > Setting::get('morning_session_end', '11:45') &&
-    //         $currentTime < $eveningStart) {
-    //         return "La próxima sesión comienza a las " . $eveningStart;
-    //     }
+        if ($currentTime > Setting::get('morning_session_end', '11:45') &&
+            $currentTime < $eveningStart) {
+            return "La próxima sesión comienza a las " . $eveningStart;
+        }
 
-    //     if ($currentTime > Setting::get('evening_session_end', '20:45')) {
-    //         return "La próxima sesión comienza mañana a las " . $morningStart;
-    //     }
+        if ($currentTime > Setting::get('evening_session_end', '20:45')) {
+            return "La próxima sesión comienza mañana a las " . $morningStart;
+        }
 
-    //     return "Las apuestas están abiertas en este momento";
-    // }
+        return "Las apuestas están abiertas en este momento";
+    }
 
     public function validateWinningNumber(string $winningNumber, string $sessionTime): bool
     {
