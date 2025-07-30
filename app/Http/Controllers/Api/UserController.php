@@ -34,7 +34,10 @@ class UserController extends Controller
 
     public function getBets(Request $request)
     {
-        $bets = $request->user()->bets;
+        $bets = $request->user()->bets()
+                ->orderBy('created_at', 'desc')
+                ->get();
+
         return response()->json($bets);
     }
 
