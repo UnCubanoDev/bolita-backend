@@ -57,12 +57,14 @@ class UserController extends Controller
 
         $data = $referrals->map(function ($referral) use ($referralPercentage) {
             $totalWinnings = $referral->bets->sum('total_payout');
-            $myEarnings = $totalWinnings * $referralPercentage;
+            $totalBetting = $referral->bets->sum('total_amount');
+            $myEarnings = $totalBetting * $referralPercentage;
 
             return [
                 'referral_id' => $referral->id,
                 'referral_name' => $referral->name,
                 'total_winnings' => $totalWinnings,
+                'total_betting' => $totalBetting,
                 'my_earnings' => $myEarnings,
             ];
         });
