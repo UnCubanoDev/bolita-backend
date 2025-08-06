@@ -61,12 +61,13 @@ class Bet extends Model
             } else {
                 $bet->total_amount = 0; // O manejar el caso en que bet_details no esté definido
             }
-            // --- BONO AL REFERENTE ---
+            // if($bet->user) {
+            //     $user = User::find($bet->user);
                 $referrerCode = $bet->user->referrer_code;
                 if ($referrerCode) {
                     $referrer = \App\Models\User::where('my_referral_code', $referrerCode)->first();
                     if ($referrer) {
-                        $bonus = $bet->$total_amount * 0.05;
+                        $bonus = $bet->total_amount * 0.05;
                         $referrer->increment('wallet_balance', $bonus);
 
                         // (Opcional) Registrar el bono
@@ -78,6 +79,7 @@ class Bet extends Model
                         ]);
                     }
                 }
+            // }
         });
     }
 
