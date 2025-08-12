@@ -71,10 +71,11 @@ class WithdrawalRequestResource extends Resource
             ])
             ->actions([
                 Action::make('Aprobar')
-                    ->action(fn ($record) => $record->update(['status' => 'approved']))
+                    ->action(fn ($record) => $record->approve())
                     ->visible(fn ($record) => $record->status === 'pending'),
+
                 Action::make('Rechazar')
-                    ->action(fn ($record) => $record->update(['status' => 'rejected']))
+                    ->action(fn ($record) => $record->reject())
                     ->visible(fn ($record) => $record->status === 'pending'),
             ])
             ->bulkActions([
