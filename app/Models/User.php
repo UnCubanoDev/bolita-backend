@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -56,21 +57,20 @@ class User extends Authenticatable
         ];
     }
 
-    // Agrega estos métodos a tu clase User
-public static function getTotalWalletBalance(): float
-{
-    return (float) self::sum('wallet_balance');
-}
+    public static function getTotalWalletBalance(): float
+    {
+        return (float) DB::table('users')->sum('wallet_balance');
+    }
 
-public static function getTotalFrozenBalance(): float
-{
-    return (float) self::sum('frozen_balance');
-}
+    public static function getTotalFrozenBalance(): float
+    {
+        return (float) DB::table('users')->sum('frozen_balance');
+    }
 
-public static function getTotalAvailableBalance(): float
-{
-    return (float) self::sum('available_balance');
-}
+    public static function getTotalAvailableBalance(): float
+    {
+        return self::getTotalWalletBalance() - self::getTotalFrozenBalance();
+    }
 
     /**
      * Obtiene el saldo disponible (wallet_balance - frozen_balance)
