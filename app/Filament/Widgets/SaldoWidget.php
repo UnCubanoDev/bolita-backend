@@ -13,13 +13,13 @@ class SaldoWidget extends Widget
     protected function getViewData(): array
     {
         $totalWallet = User::getTotalWalletBalance();
-        $totalFrozen = User::getTotalFrozenBalance();
-        $totalAvailable = User::getTotalAvailableBalance();
+        // $totalFrozen = User::getTotalFrozenBalance();
+        // $totalAvailable = User::getTotalAvailableBalance();
 
         return [
             'totalWallet' => number_format($totalWallet, 2),
-            'totalFrozen' => number_format($totalFrozen, 2),
-            'totalAvailable' => number_format($totalAvailable, 2),
+            // 'totalFrozen' => number_format($totalFrozen, 2),
+            // 'totalAvailable' => number_format($totalAvailable, 2),
         ];
     }
 }
