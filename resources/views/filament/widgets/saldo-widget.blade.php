@@ -12,7 +12,7 @@
                         Saldo Total
                     </div>
                     <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
-                        ${{ number_format($totalWallet, 2) }}
+                        {{ $totalWallet }}
                     </div>
                 </div>
 
@@ -22,7 +22,7 @@
                         Saldo Congelado
                     </div>
                     <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
-                        ${{ number_format($totalFrozen, 2) }}
+                        {{ $totalFrozen }}
                     </div>
                 </div>
 
@@ -32,7 +32,7 @@
                         Saldo Disponible
                     </div>
                     <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
-                        ${{ number_format($totalAvailable, 2) }}
+                        {{ $totalAvailable }}
                     </div>
                 </div>
             </div>
