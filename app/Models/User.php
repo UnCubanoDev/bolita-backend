@@ -60,15 +60,15 @@ class User extends Authenticatable
         return (float) self::sum('wallet_balance');
     }
 
-    // public static function getTotalFrozenBalance(): float
-    // {
-    //     return (float) DB::table('users')->sum('frozen_balance');
-    // }
+    public static function getTotalFrozenBalance(): float
+    {
+        return (float) DB::table('users')->sum('frozen_balance');
+    }
 
-    // public static function getTotalAvailableBalance(): float
-    // {
-    //     return self::getTotalWalletBalance() - self::getTotalFrozenBalance();
-    // }
+    public static function getTotalAvailableBalance(): float
+    {
+        return self::getTotalWalletBalance() - self::getTotalFrozenBalance();
+    }
 
     /**
      * Obtiene el saldo disponible (wallet_balance - frozen_balance)
