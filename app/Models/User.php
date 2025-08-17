@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public static function getTotalFrozenBalance(): float
     {
-        return (float) self::sum('frozen_balance');
+        return (float) DB::table('users')->sum('frozen_balance');
     }
 
     public static function getTotalAvailableBalance(): float
