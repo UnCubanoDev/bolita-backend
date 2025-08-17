@@ -12,14 +12,16 @@ class SaldoWidget extends Widget
 
     protected function getViewData(): array
     {
-        $totalWallet = User::getTotalWalletBalance();
-        $totalFrozen = User::getTotalFrozenBalance();
-        $totalAvailable = User::getTotalAvailableBalance();
+        // Asegurarse de obtener valores numéricos
+        $totalWallet = (float)User::getTotalWalletBalance();
+        $totalFrozen = (float)User::getTotalFrozenBalance();
+        $totalAvailable = (float)User::getTotalAvailableBalance();
 
+        // Formatear solo si los valores son numéricos
         return [
-            'totalWallet' => number_format($totalWallet, 2),
-            'totalFrozen' => number_format($totalFrozen, 2),
-            'totalAvailable' => number_format($totalAvailable, 2),
+            'totalWallet' => is_numeric($totalWallet) ? number_format($totalWallet, 2) : '0.00',
+            'totalFrozen' => is_numeric($totalFrozen) ? number_format($totalFrozen, 2) : '0.00',
+            'totalAvailable' => is_numeric($totalAvailable) ? number_format($totalAvailable, 2) : '0.00',
         ];
     }
 }
