@@ -337,28 +337,29 @@
         </div>
     </section>
 
-    <section class="download" id="download">
-        <div class="container">
-            <h2>Descarga la App LottoGame Hoy</h2>
-            <p>Disponible para Android. ¡Empieza a jugar en minutos!</p>
-            <div class="app-buttons">
-                <a href="{{ route('download.apk') }}" class="app-button" download="LottoGame.apk" id="download-apk" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;
-          background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;text-decoration:none;
-          border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.3);transition:transform 0.2s ease;">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
-        <path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4h6.66V9h3.84L12 2z"/>
-    </svg>
-    <div style="display:flex;flex-direction:column;line-height:1;">
-        <span style="font-size:12px;opacity:0.8;">Descargar en</span>
-        <span style="font-weight:bold;font-size:16px;">Google Play</span>
+    <!-- Busca esta sección en tu archivo y reemplázala -->
+<section class="download" id="download">
+    <div class="container">
+        <h2>Descarga la App LottoGame Hoy</h2>
+        <p>Disponible para Android. ¡Empieza a jugar en minutos!</p>
+        <div class="app-buttons">
+            <a href="{{ route('download.apk') }}" class="app-button" download="LottoGame.apk" id="download-apk" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;
+      background:linear-gradient(135deg,#FF5722,#E64A19);color:#fff;text-decoration:none;
+      border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.3);transition:transform 0.2s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4h6.66V9h3.84L12 2z"/>
+                </svg>
+                <div style="display:flex;flex-direction:column;line-height:1;">
+                    <span style="font-size:12px;opacity:0.8;">Descargar para</span>
+                    <span style="font-weight:bold;font-size:16px;">Android</span>
+                </div>
+            </a>
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.9rem; color: #ffffffaa;">
+        <p>Después de descargar, ve a <strong>Ajustes > Seguridad</strong> y activa <strong>"Orígenes desconocidos"</strong> para instalar.</p>
     </div>
-                </a>
-            </div>
-            <div style="margin-top: 1rem; font-size: 0.9rem; color: #ffffffaa;">
-            <p>Después de descargar, ve a <strong>Ajustes > Seguridad</strong> y activa <strong>"Orígenes desconocidos"</strong> para instalar.</p>
-        </div>
-        </div>
-    </section>
+    </div>
+</section>
 
     <footer>
         <div class="container">

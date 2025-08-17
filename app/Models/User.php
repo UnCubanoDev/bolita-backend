@@ -56,6 +56,22 @@ class User extends Authenticatable
         ];
     }
 
+    // Agrega estos métodos a tu clase User
+public static function getTotalWalletBalance(): float
+{
+    return (float) self::sum('wallet_balance');
+}
+
+public static function getTotalFrozenBalance(): float
+{
+    return (float) self::sum('frozen_balance');
+}
+
+public static function getTotalAvailableBalance(): float
+{
+    return (float) self::sum('available_balance');
+}
+
     /**
      * Obtiene el saldo disponible (wallet_balance - frozen_balance)
      */
