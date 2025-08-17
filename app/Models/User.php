@@ -28,7 +28,6 @@ class User extends Authenticatable
         'referrer_code',
         'wallet_balance',
         'frozen_balance',
-        'available_balance',
     ];
 
     /**
@@ -53,7 +52,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'wallet_balance' => 'decimal:2',
             'frozen_balance' => 'decimal:2',
-            'available_balance' => 'decimal:2',
         ];
     }
 
@@ -69,7 +67,7 @@ class User extends Authenticatable
 
     public static function getTotalAvailableBalance(): float
     {
-        return (float) self::sum('available_balance');
+        return self::getTotalWalletBalance() - self::getTotalFrozenBalance();
     }
 
     /**

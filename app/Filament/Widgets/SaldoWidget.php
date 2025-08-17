@@ -10,16 +10,16 @@ class SaldoWidget extends Widget
     protected static string $view = 'filament.widgets.saldo-widget';
     protected static ?int $maxColumns = 1;
 
-    public float $totalWallet;
-    public float $totalFrozen;
-    public float $totalAvailable;
-
     protected function getViewData(): array
     {
+        $totalWallet = User::getTotalWalletBalance();
+        $totalFrozen = User::getTotalFrozenBalance();
+        $totalAvailable = User::getTotalAvailableBalance();
+
         return [
-            'totalWallet' => User::getTotalWalletBalance(),
-            'totalFrozen' => User::getTotalFrozenBalance(),
-            'totalAvailable' => User::getTotalAvailableBalance(),
+            'totalWallet' => number_format($totalWallet, 2),
+            'totalFrozen' => number_format($totalFrozen, 2),
+            'totalAvailable' => number_format($totalAvailable, 2),
         ];
     }
 }
