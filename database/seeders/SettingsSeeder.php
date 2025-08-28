@@ -168,6 +168,46 @@ class SettingsSeeder extends Seeder
                 'description' => 'Número de teléfono al cual se debe confirmar las recargas',
                 'group' => 'recharge'
             ],
+            [
+                'key' => 'limit_fijo',
+                'value' => '5000', // Cambia por el número real o déjalo vacío
+                'type' => 'number',
+                'label' => 'Limite Fijo',
+                'description' => 'Número máximo de dinero en apuestas totales de tipo Fijo',
+                'group' => 'betting'
+            ],
+            [
+                'key' => 'limit_pick3',
+                'value' => '5000', // Cambia por el número real o déjalo vacío
+                'type' => 'number',
+                'label' => 'Limite Pick 3',
+                'description' => 'Número máximo de dinero en apuestas totales de tipo Pick 3',
+                'group' => 'betting'
+            ],
+            [
+                'key' => 'limit_pick4',
+                'value' => '5000', // Cambia por el número real o déjalo vacío
+                'type' => 'number',
+                'label' => 'Limite Pick 4',
+                'description' => 'Número máximo de dinero en apuestas totales de tipo Pick 4',
+                'group' => 'betting'
+            ],
+            [
+                'key' => 'limit_corrido',
+                'value' => '5000', // Cambia por el número real o déjalo vacío
+                'type' => 'number',
+                'label' => 'Limite Corrido',
+                'description' => 'Número máximo de dinero en apuestas totales de tipo Corrido',
+                'group' => 'betting'
+            ],
+            [
+                'key' => 'limit_parle',
+                'value' => '5000', // Cambia por el número real o déjalo vacío
+                'type' => 'number',
+                'label' => 'Limite Parle',
+                'description' => 'Número máximo de dinero en apuestas totales de tipo Parle',
+                'group' => 'betting'
+            ],
         ];
 
         foreach ($settings as $setting) {

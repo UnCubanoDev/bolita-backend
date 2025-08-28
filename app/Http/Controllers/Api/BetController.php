@@ -68,72 +68,24 @@ class BetController extends Controller
                 $startTime = $eveningStart;
                 $endTime = $eveningEnd;
             } else {
-                // Fuera de horarios de apuestas
+                // 🚫 Fuera de horarios → NO se crea la apuesta, solo mensaje
                 if ($currentTime->gt($eveningEnd)) {
-                    // Después del horario de tarde, ir a la siguiente sesión
-                    $nextSession = $this->calculateNextSession($validated['session']);
-
-                    $game = Game::firstOrCreate([
-                        'name' => $gameName,
-                        'date' => $nextSession,
-                    ]);
-
-                    $message = "Apuesta registrada para la siguiente sesión ({$nextSession}) - Fuera del horario de apuestas";
-                } elseif ($currentTime->lt($morningStart)) {
-                    // Antes del horario de mañana, usar sesión actual
-                    $game = Game::firstOrCreate([
-                        'name' => $gameName,
-                        'date' => $validated['session']
-                    ]);
-
-                    $message = "Apuesta registrada para la sesión actual - Horario de apuestas mañana: {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}";
-                } else {
-                    // Entre horarios (gap entre mañana y tarde)
-                    $game = Game::firstOrCreate([
-                        'name' => $gameName,
-                        'date' => $validated['session'],
-                    ]);
-
-                    $message = "Apuesta registrada para la sesión actual - Horario de apuestas tarde: {$eveningStart->format('H:i')} - {$eveningEnd->format('H:i')}";
-                }
-
-                $totalAmount = collect($validated['bet_details'])->sum('amount');
-                $user = auth()->user();
-
-                // Verificar saldo disponible (no congelado)
-                if ($user->available_balance < $totalAmount) {
+                    // Después del horario de tarde → próxima mañana
+                    $nextSession = $morningStart->copy()->addDay()->format('H:i');
                     return response()->json([
-                        'error' => 'Saldo disponible insuficiente para realizar la apuesta',
-                        'available_balance' => $user->available_balance,
-                        'frozen_balance' => $user->frozen_balance,
-                        'total_balance' => $user->wallet_balance,
-                        'required_amount' => $totalAmount
+                        'message' => "No puede apostar en este momento. El próximo horario disponible es mañana a las {$nextSession}"
+                    ], 400);
+                } elseif ($currentTime->lt($morningStart)) {
+                    // Antes del horario de mañana
+                    return response()->json([
+                        'message' => "No puede apostar en este momento. El próximo horario disponible es hoy en la mañana: {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}"
+                    ], 400);
+                } else {
+                    // Gap entre mañana y tarde
+                    return response()->json([
+                        'message' => "No puede apostar en este momento. El próximo horario disponible es en la tarde: {$eveningStart->format('H:i')} - {$eveningEnd->format('H:i')}"
                     ], 400);
                 }
-
-                // Descontar del saldo total
-                $user->decrement('wallet_balance', $totalAmount);
-
-                $bet = Bet::create([
-                    'user_id' => $user->id,
-                    'game_id' => $game->id,
-                    'type' => $validated['variant'],
-                    'bet_details' => $validated['bet_details'],
-                    'session_time' => $request->input('session_time', null),
-                    'total_amount' => $totalAmount,
-                    'status' => 'pending',
-                    'lotto' => $gameName,
-                ]);
-
-                return response()->json([
-                    'bet' => $bet,
-                    'message' => $message,
-                    'balance_info' => [
-                        'available_balance' => $user->available_balance,
-                        'frozen_balance' => $user->frozen_balance,
-                        'total_balance' => $user->wallet_balance
-                    ]
-                ], 201);
             }
 
             // Dentro del horario de apuestas (mañana o tarde)
@@ -155,6 +107,54 @@ class BetController extends Controller
 
         $totalAmount = collect($validated['bet_details'])->sum('amount');
         $user = auth()->user();
+
+        // 🔎 Validar límite por número y tipo de apuesta
+        foreach ($validated['bet_details'] as $detail) {
+            $number = $detail['number'];
+            $amount = $detail['amount'];
+            $variant = $validated['variant'];
+
+            // Obtener límite desde settings
+            switch ($variant) {
+                case 'fijo':
+                    $limit = Setting::where('key', 'limit_fijo')->value('value');
+                    break;
+                case 'pick3':
+                    $limit = Setting::where('key', 'limit_pick3')->value('value');
+                    break;
+                case 'pick4':
+                    $limit = Setting::where('key', 'limit_pick4')->value('value');
+                    break;
+                case 'corrido':
+                    $limit = Setting::where('key', 'limit_corrido')->value('value');
+                    break;
+                case 'parle':
+                    $limit = Setting::where('key', 'limit_parle')->value('value');
+                    break;
+                default:
+                    $limit = null;
+            }
+
+            if ($limit) {
+                // Sumar monto total ya apostado en este número para este tipo
+                $currentBets = Bet::where('game_id', $game->id)
+                    ->where('type', $variant)
+                    ->whereJsonContains('bet_details', [['number' => $number]])
+                    ->get()
+                    ->flatMap(function ($bet) {
+                        return collect($bet->bet_details)->pluck('amount', 'number');
+                    })
+                    ->get($number, 0);
+
+                if ($currentBets + $amount > $limit) {
+                    return response()->json([
+                        'message' => "El número {$number} en la modalidad {$variant} ya alcanzó el límite de {$limit}.",
+                        'apostado_actual' => $currentBets,
+                        'intento' => $amount
+                    ], 400);
+                }
+            }
+        }
 
         // Verificar saldo disponible (no congelado)
         if ($user->available_balance < $totalAmount) {
