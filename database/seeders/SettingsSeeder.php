@@ -15,7 +15,7 @@ class SettingsSeeder extends Seeder
             // Horarios generales para Georgia
             [
                 'key' => 'georgia_morning_start',
-                'value' => '06:00',
+                'value' => '10:00',
                 'type' => 'time',
                 'label' => 'Inicio Georgia Mañana',
                 'description' => '',
@@ -23,7 +23,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'georgia_morning_end',
-                'value' => '11:45',
+                'value' => '12:00',
                 'type' => 'time',
                 'label' => 'Fin Georgia Mañana',
                 'description' => '',
@@ -31,7 +31,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'georgia_evening_start',
-                'value' => '14:00',
+                'value' => '17:00',
                 'type' => 'time',
                 'label' => 'Inicio Georgia Tarde',
                 'description' => '',
@@ -39,7 +39,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'georgia_evening_end',
-                'value' => '20:45',
+                'value' => '18:45',
                 'type' => 'time',
                 'label' => 'Fin Georgia Tarde',
                 'description' => '',
@@ -48,7 +48,7 @@ class SettingsSeeder extends Seeder
             // Horarios generales para Florida
             [
                 'key' => 'florida_morning_start',
-                'value' => '06:00',
+                'value' => '10:00',
                 'type' => 'time',
                 'label' => 'Inicio Florida Mañana',
                 'description' => '',
@@ -56,7 +56,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'florida_morning_end',
-                'value' => '11:45',
+                'value' => '13:00',
                 'type' => 'time',
                 'label' => 'Fin Florida Mañana',
                 'description' => '',
@@ -64,7 +64,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'florida_evening_start',
-                'value' => '14:00',
+                'value' => '17:00',
                 'type' => 'time',
                 'label' => 'Inicio Florida Tarde',
                 'description' => '',
@@ -72,7 +72,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'florida_evening_end',
-                'value' => '20:45',
+                'value' => '21:00',
                 'type' => 'time',
                 'label' => 'Fin Florida Tarde',
                 'description' => '',
@@ -81,7 +81,7 @@ class SettingsSeeder extends Seeder
             // Horarios generales para New York
             [
                 'key' => 'newyork_morning_start',
-                'value' => '06:00',
+                'value' => '10:00',
                 'type' => 'time',
                 'label' => 'Inicio New York Mañana',
                 'description' => '',
@@ -89,7 +89,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'newyork_morning_end',
-                'value' => '11:45',
+                'value' => '14:00',
                 'type' => 'time',
                 'label' => 'Fin New York Mañana',
                 'description' => '',
@@ -97,7 +97,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'newyork_evening_start',
-                'value' => '14:00',
+                'value' => '17:00',
                 'type' => 'time',
                 'label' => 'Inicio New York Tarde',
                 'description' => '',
@@ -105,7 +105,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'newyork_evening_end',
-                'value' => '20:45',
+                'value' => '22:00',
                 'type' => 'time',
                 'label' => 'Fin New York Tarde',
                 'description' => '',
@@ -130,7 +130,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'payout_fijo',
-                'value' => '50',
+                'value' => '80',
                 'type' => 'number',
                 'label' => 'Multiplicador pago Fijo',
                 'description' => 'Pago por cada peso apostado en Fijo',
@@ -138,7 +138,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'payout_corrido',
-                'value' => '20',
+                'value' => '25',
                 'type' => 'number',
                 'label' => 'Multiplicador pago Corrido',
                 'description' => 'Pago por cada peso apostado en Corrido',
@@ -146,7 +146,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'payout_parle',
-                'value' => '500',
+                'value' => '1000',
                 'type' => 'number',
                 'label' => 'Multiplicador pago Parle',
                 'description' => 'Pago por cada peso apostado en Parle',
@@ -154,7 +154,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'recharge_card_number',
-                'value' => '1234-5678-9012-3456', // Cambia por el número real o déjalo vacío
+                'value' => '9205-9598-7864-5481', // Cambia por el número real o déjalo vacío
                 'type' => 'string',
                 'label' => 'Número de Tarjeta para Recargas',
                 'description' => 'Número de tarjeta o cuenta a la que se deben hacer las recargas',
@@ -162,7 +162,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'phone_number',
-                'value' => '+15085589065', // Cambia por el número real o déjalo vacío
+                'value' => '58979145', // Cambia por el número real o déjalo vacío
                 'type' => 'string',
                 'label' => 'Número de Teléfono para Recargas',
                 'description' => 'Número de teléfono al cual se debe confirmar las recargas',
