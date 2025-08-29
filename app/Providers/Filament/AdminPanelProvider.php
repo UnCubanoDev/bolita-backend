@@ -20,7 +20,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\LoteriasWidget;
 use App\Filament\Widgets\SaldoWidget;
 use App\Filament\Widgets\PlatformStatsWidget;
-use App\Filament\Widgets\WinnerWidget;
+use App\Filament\Widgets\WinnersWidget;
 
 class AdminPanelProvider extends PanelProvider
 {
