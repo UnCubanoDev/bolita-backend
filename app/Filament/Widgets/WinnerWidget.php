@@ -10,6 +10,7 @@ class WinnersWidget extends Widget
 {
     protected static string $view = 'filament.widgets.winners-widget';
     protected static ?int $maxColumns = 2;
+    protected static ?int $sort = 40;
 
     public function getColumnSpan(): int|string|array
     {

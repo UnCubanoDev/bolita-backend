@@ -9,6 +9,7 @@ class SaldoWidget extends Widget
 {
     protected static string $view = 'filament.widgets.saldo-widget';
     protected static ?int $maxColumns = 1;
+    protected static ?int $sort = 20;
 
     public function getColumnSpan(): int|string|array
     {

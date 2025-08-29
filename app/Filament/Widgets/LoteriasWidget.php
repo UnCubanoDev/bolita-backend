@@ -9,6 +9,7 @@ class LoteriasWidget extends Widget
 {
     protected static string $view = 'filament.widgets.loterias-widget';
     protected static ?int $maxColumns = 1;
+    protected static ?int $sort = 10;
 
     public function getColumnSpan(): int|string|array
     {

@@ -11,6 +11,7 @@ class PlatformStatsWidget extends Widget
 {
 	protected static string $view = 'filament.widgets.platform-stats-widget';
 	protected static ?int $maxColumns = 2;
+    protected static ?int $sort = 30;
 
 	public function getColumnSpan(): int|string|array
 	{
