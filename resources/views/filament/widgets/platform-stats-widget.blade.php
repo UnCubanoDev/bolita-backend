@@ -1,3 +1,5 @@
+<x-filament::widget class="w-full">
+    <x-filament::card class="w-full">
 <div class="p-4">
 	<div class="text-lg font-semibold mb-3">Estadísticas de la plataforma (hoy)</div>
 
@@ -18,4 +20,7 @@
 		</div>
 	</div>
 </div>
+
+    </x-filament::card>
+</x-filament::widget>
 

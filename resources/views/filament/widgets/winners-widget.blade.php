@@ -1,3 +1,5 @@
+<x-filament::widget class="w-full">
+    <x-filament::card class="w-full">
 <div class="p-4 space-y-3">
 	<div class="text-lg font-semibold">Ganadores</div>
 
@@ -77,3 +79,6 @@
 		</div>
 	@endif
 </div>
+
+    </x-filament::card>
+</x-filament::widget>
