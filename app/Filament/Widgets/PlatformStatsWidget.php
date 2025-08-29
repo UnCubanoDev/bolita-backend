@@ -14,7 +14,7 @@ class PlatformStatsWidget extends Widget
 
 	public function getColumnSpan(): int|string|array
 	{
-		return 'full';
+		return 2;
 	}
 
 	protected function getViewData(): array

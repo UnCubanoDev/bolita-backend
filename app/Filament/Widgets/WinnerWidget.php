@@ -13,7 +13,7 @@ class WinnersWidget extends Widget
 
     public function getColumnSpan(): int|string|array
     {
-        return 'full'; // también puedes usar 2 si prefieres número
+        return 2;
     }
 
     public ?string $selectedGameName = null;
