@@ -108,10 +108,14 @@ class BetController extends Controller
         $totalAmount = collect($validated['bet_details'])->sum('amount');
         $user = auth()->user();
 
-        // 🔎 Validar límite por número y tipo de apuesta
-        foreach ($validated['bet_details'] as $detail) {
-            $number = $detail['number'];
-            $amount = $detail['amount'];
+        // Agrupar las apuestas del request por número
+        $requestGrouped = collect($validated['bet_details'])
+            ->groupBy('number')
+            ->map(function ($items) {
+                return $items->sum('amount');
+            });
+
+        foreach ($requestGrouped as $number => $requestAmount) {
             $variant = $validated['variant'];
 
             // Obtener límite desde settings
@@ -136,21 +140,44 @@ class BetController extends Controller
             }
 
             if ($limit) {
-                // Sumar monto total ya apostado en este número para este tipo
+                // Si es parle, generar ambas combinaciones
+                if ($variant === 'parle' && strlen($number) === 4) {
+                    $xy = substr($number, 0, 2);
+                    $ab = substr($number, 2, 2);
+
+                    $comb1 = $xy.$ab; // xyab
+                    $comb2 = $ab.$xy; // abxy
+
+                    $numbersToCheck = [$comb1, $comb2];
+                } else {
+                    $numbersToCheck = [$number];
+                }
+
+                // Obtener total apostado en BD para todas las combinaciones
                 $currentBets = Bet::where('game_id', $game->id)
                     ->where('type', $variant)
-                    ->whereJsonContains('bet_details', [['number' => $number]])
                     ->get()
                     ->flatMap(function ($bet) {
-                        return collect($bet->bet_details)->pluck('amount', 'number');
-                    })
-                    ->get($number, 0);
+                        return collect($bet->bet_details)
+                            ->groupBy('number')
+                            ->map(fn($items) => $items->sum('amount'));
+                    });
 
-                if ($currentBets + $amount > $limit) {
+                // Sumar el acumulado de todas las combinaciones
+                $alreadyBet = collect($numbersToCheck)->sum(fn($n) => $currentBets->get($n, 0));
+
+                // También sumar lo que viene en este mismo request para esas combinaciones
+                $requestTotal = collect($numbersToCheck)->sum(fn($n) => $requestGrouped->get($n, 0));
+
+                $total = $alreadyBet + $requestTotal;
+
+                if ($total > $limit) {
                     return response()->json([
                         'message' => "El número {$number} en la modalidad {$variant} ya alcanzó el límite de {$limit}.",
-                        'apostado_actual' => $currentBets,
-                        'intento' => $amount
+                        'apostado_actual' => $alreadyBet,
+                        'intento' => $requestTotal,
+                        'total' => $total,
+                        'combinaciones' => $numbersToCheck
                     ], 400);
                 }
             }
