@@ -11,7 +11,7 @@ class WinnersWidget extends Widget
     protected static string $view = 'filament.widgets.winners-widget';
     protected static ?int $maxColumns = 2;
 
-    protected function getColumnSpan(): int|string|array
+    public function getColumnSpan(): int|string|array
     {
         return 'full'; // también puedes usar 2 si prefieres número
     }
