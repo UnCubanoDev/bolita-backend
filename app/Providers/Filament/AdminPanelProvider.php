@@ -43,8 +43,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 LoteriasWidget::class,
                 SaldoWidget::class,
-                PlatformStatsWidget::class,
                 WinnersWidget::class,
+                PlatformStatsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

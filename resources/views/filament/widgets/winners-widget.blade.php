@@ -1,136 +1,79 @@
+<div class="p-4 space-y-3">
+	<div class="text-lg font-semibold">Ganadores</div>
 
-namespace App\Filament\Widgets;
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+		<div>
+			<label class="text-sm text-gray-600">Juego</label>
+			<select wire:model="selectedGameName" class="w-full border rounded px-2 py-1">
+				<option value="">Todos</option>
+				@foreach ($gameNames as $name)
+					<option value="{{ $name }}">{{ $name }}</option>
+				@endforeach
+			</select>
+		</div>
+		<div>
+			<label class="text-sm text-gray-600">Día</label>
+			<select wire:model="selectedDate" class="w-full border rounded px-2 py-1">
+				<option value="">Todos</option>
+				@foreach ($dates as $day)
+					<option value="{{ $day }}">{{ $day }}</option>
+				@endforeach
+			</select>
+		</div>
+		<div>
+			<label class="text-sm text-gray-600">Variante</label>
+			<select wire:model="selectedVariant" class="w-full border rounded px-2 py-1">
+				<option value="">Todas</option>
+				@foreach ($variants as $v)
+					<option value="{{ $v }}">{{ strtoupper($v) }}</option>
+				@endforeach
+			</select>
+		</div>
+	</div>
 
-use App\Models\Bet;
-use App\Models\Game;
-use Filament\Widgets\Widget;
+	<div class="text-sm text-gray-600">
+		@if ($game)
+			Lotería: <span class="font-medium">{{ $game->name }}</span>
+			@if ($game->date)
+				| Día: <span class="font-medium">{{ $game->date }}</span>
+			@endif
+			| Pick3: <span class="font-medium">{{ $game->pick3_winning_number ?? '—' }}</span>
+			| Pick4: <span class="font-medium">{{ $game->pick4_winning_number ?? '—' }}</span>
+		@else
+			<span class="text-gray-500">Sin contexto de juego seleccionado.</span>
+		@endif
+	</div>
 
-class WinnersWidget extends Widget
-{
-    protected static string $view = 'filament.widgets.winners-widget';
-    protected static ?int $maxColumns = 2;
-
-    public ?string $selectedGameName = null;
-    public ?string $selectedDate = null; // formato YYYY-MM-DD
-    public ?string $selectedVariant = null;
-
-    public array $gameNames = [];
-    public array $dates = [];
-    public array $variants = ['fijo', 'pick3', 'pick4', 'corrido', 'parle'];
-
-    public function mount(): void
-    {
-        $this->gameNames = Game::query()
-            ->select('name')
-            ->distinct()
-            ->orderBy('name')
-            ->pluck('name')
-            ->toArray();
-
-        $this->dates = Game::query()
-            ->select('date')
-            ->distinct()
-            ->orderByDesc('date')
-            ->pluck('date')
-            ->toArray();
-
-        // Defaults: último juego con resultados
-        if (!$this->selectedGameName || !$this->selectedDate) {
-            $lastWithResults = Game::query()
-                ->where(function ($q) {
-                    $q->whereNotNull('pick3_winning_number')
-                      ->orWhereNotNull('pick4_winning_number');
-                })
-                ->orderByDesc('updated_at')
-                ->first();
-
-            if ($lastWithResults) {
-                $this->selectedGameName = $this->selectedGameName ?? $lastWithResults->name;
-                $this->selectedDate = $this->selectedDate ?? $lastWithResults->date;
-            }
-        }
-    }
-
-    public function updatedSelectedGameName(): void {}
-    public function updatedSelectedDate(): void {}
-    public function updatedSelectedVariant(): void {}
-
-    protected function getViewData(): array
-    {
-        $betsQuery = Bet::query()
-            ->with(['user', 'game'])
-            ->where('status', 'won');
-
-        if ($this->selectedVariant) {
-            $betsQuery->where('type', $this->selectedVariant);
-        }
-
-        // Filtrar por juego y día a través de la relación con Game
-        $betsQuery->whereHas('game', function ($q) {
-            if ($this->selectedGameName) {
-                $q->where('name', $this->selectedGameName);
-            }
-            if ($this->selectedDate) {
-                $q->where('date', $this->selectedDate);
-            }
-        });
-
-        $bets = $betsQuery->orderByDesc('updated_at')->get();
-
-        // Armar filas con número ganador adecuado según tipo y juego de cada apuesta
-        $rows = $bets->map(function (Bet $bet) {
-            $game = $bet->game;
-            $winningUsed = null;
-
-            switch ($bet->type) {
-                case 'pick3':
-                    $winningUsed = $game?->pick3_winning_number;
-                    break;
-                case 'fijo':
-                    $winningUsed = $game?->pick3_winning_number
-                        ? substr($game->pick3_winning_number, -2)
-                        : null;
-                    break;
-                case 'pick4':
-                case 'corrido':
-                case 'parle':
-                    $winningUsed = $game?->pick4_winning_number;
-                    break;
-                default:
-                    $winningUsed = $game?->pick4_winning_number ?? $game?->pick3_winning_number;
-                    break;
-            }
-
-            return [
-                'user' => $bet->user?->name ?? ('Usuario #'.$bet->user_id),
-                'lotto' => $bet->lotto ?? $game?->name,
-                'date' => $game?->date,
-                'type' => $bet->type,
-                'numbers' => collect($bet->bet_details)
-                    ->map(fn ($d) => "{$d['number']} (" . number_format((float)$d['amount'], 2) . ")")
-                    ->implode(', '),
-                'winning_number' => $winningUsed,
-                'payout' => number_format((float)$bet->total_payout, 2),
-            ];
-        });
-
-        // Juego de contexto (cabecera) si hay filtros; si no, toma el más reciente con resultados
-        $contextGame = Game::query()
-            ->when($this->selectedGameName, fn ($q) => $q->where('name', $this->selectedGameName))
-            ->when($this->selectedDate, fn ($q) => $q->where('date', $this->selectedDate))
-            ->orderByDesc('updated_at')
-            ->first();
-
-        return [
-            'game' => $contextGame,
-            'bets' => $rows,
-            'gameNames' => $this->gameNames,
-            'dates' => $this->dates,
-            'variants' => $this->variants,
-            'selectedGameName' => $this->selectedGameName,
-            'selectedDate' => $this->selectedDate,
-            'selectedVariant' => $this->selectedVariant,
-        ];
-    }
-}
-
+	@if ($bets->isEmpty())
+		<div class="text-sm text-gray-500">No hay ganadores con los filtros seleccionados.</div>
+	@else
+		<div class="overflow-x-auto">
+			<table class="min-w-full text-sm">
+				<thead class="text-left border-b">
+					<tr>
+						<th class="py-2 pr-4">Jugador</th>
+						<th class="py-2 pr-4">Lotería</th>
+						<th class="py-2 pr-4">Día</th>
+						<th class="py-2 pr-4">Variante</th>
+						<th class="py-2 pr-4">Números jugados</th>
+						<th class="py-2 pr-4">Número ganador</th>
+						<th class="py-2 pr-4">Pago</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach ($bets as $row)
+						<tr class="border-b last:border-0">
+							<td class="py-2 pr-4">{{ $row['user'] }}</td>
+							<td class="py-2 pr-4">{{ $row['lotto'] }}</td>
+							<td class="py-2 pr-4">{{ $row['date'] }}</td>
+							<td class="py-2 pr-4 uppercase">{{ $row['type'] }}</td>
+							<td class="py-2 pr-4">{{ $row['numbers'] }}</td>
+							<td class="py-2 pr-4 font-mono">{{ $row['winning_number'] ?? '—' }}</td>
+							<td class="py-2 pr-4 font-semibold">$ {{ $row['payout'] }}</td>
+						</tr>
+					@endforeach
+				</tbody>
+			</table>
+		</div>
+	@endif
+</div>

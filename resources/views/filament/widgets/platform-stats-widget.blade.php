@@ -1,5 +1,5 @@
 <div class="p-4">
-	<div class="text-lg font-semibold mb-3">Estadísticas de la plataforma</div>
+	<div class="text-lg font-semibold mb-3">Estadísticas de la plataforma (hoy)</div>
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 		<div class="rounded border p-4">
