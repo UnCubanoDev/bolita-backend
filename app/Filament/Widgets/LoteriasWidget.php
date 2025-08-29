@@ -10,6 +10,11 @@ class LoteriasWidget extends Widget
     protected static string $view = 'filament.widgets.loterias-widget';
     protected static ?int $maxColumns = 1;
 
+    public function getColumnSpan(): int|string|array
+    {
+        return 1;
+    }
+
     public array $loterias = [];
 
     public function mount(): void
