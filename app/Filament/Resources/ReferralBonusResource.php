@@ -33,6 +33,9 @@ class ReferralBonusResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->orderByDesc('created_at');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('referrer.name')->label('Referente'),
                 Tables\Columns\TextColumn::make('referredUser.name')->label('Referido'),

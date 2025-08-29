@@ -56,6 +56,9 @@ class WithdrawalRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->orderByDesc('created_at');
+            })
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('user.name')->label('Usuario'),
