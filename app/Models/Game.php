@@ -141,4 +141,9 @@ class Game extends Model
             ['name' => 'New York Lottery', 'variants' => ['pick3', 'pick4', 'fijo', 'corrido']],
         ];
     }
+
+    public function bets()
+    {
+        return $this->hasMany(\App\Models\Bet::class, 'game_id');
+    }
 }

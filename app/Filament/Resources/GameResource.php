@@ -52,6 +52,14 @@ class GameResource extends Resource
                 Tables\Columns\TextColumn::make('date')->date(),
                 Tables\Columns\TextColumn::make('pick3_winning_number')->label('Pick 3'),
                 Tables\Columns\TextColumn::make('pick4_winning_number')->label('Pick 4'),
+                Tables\Columns\TextColumn::make('session')
+                ->label('Sesión')
+                ->getStateUsing(function (Game $record) {
+                    // Busca una apuesta (Bet) relacionada con este game
+                    $bet = $record->bets()->first();
+                    return $bet ? $bet->session : 'N/A';
+                })
+                ->sortable(),
             ])
             ->filters([
                 //
