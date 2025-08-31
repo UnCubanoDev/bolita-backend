@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use App\Models\Game;
 
 class BetResource extends Resource
 {
@@ -28,11 +29,12 @@ class BetResource extends Resource
                 Forms\Components\Select::make('user_id')->relationship('user', 'name')->required(),
                 Forms\Components\Select::make('game_id')
                     ->label('Juego')
-                    ->relationship('game', 'name')
-                    ->getOptionLabelUsing(function ($game) {
-                        return $game->name . ' - ' . $game->date;
-                    })
-                    ->searchable()
+                    ->options(
+                        Game::all()->pluck('name', 'id')->map(function ($name, $id) {
+                            $game = Game::find($id);
+                            return $game->name . ' - ' . $game->date;
+                        })
+                    )
                     ->required(),
                 Forms\Components\Select::make('type')->options([
                     'pick3' => 'Pick 3',
