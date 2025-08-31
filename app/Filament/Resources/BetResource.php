@@ -32,7 +32,7 @@ class BetResource extends Resource
                     ->options(
                         Game::all()->pluck('name', 'id')->map(function ($name, $id) {
                             $game = Game::find($id);
-                            return $game->name . ' - ' . $game->date;
+                            return $game->name . ' - ' . $game->date . '-' . $game->id;
                         })
                     )
                     ->required(),
