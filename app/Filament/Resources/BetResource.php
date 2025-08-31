@@ -41,6 +41,7 @@ class BetResource extends Resource
                     'pick4' => 'Pick 4',
                     'fijo' => 'Fijo',
                     'corrido' => 'Corrido',
+                    'parle' => 'Parle',
                 ])->required()
                 ->live()
                 ->reactive()
