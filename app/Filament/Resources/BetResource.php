@@ -118,7 +118,7 @@ class BetResource extends Resource
                     'success' => 'won',
                     'danger' => 'lost',
                 ]),
-                Tables\Columns\TextColumn::make('created_at')->date(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
