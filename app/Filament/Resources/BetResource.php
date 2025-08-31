@@ -32,6 +32,7 @@ class BetResource extends Resource
                     ->getOptionLabelUsing(function ($game) {
                         return $game->name . ' - ' . $game->date;
                     })
+                    ->searchable()
                     ->required(),
                 Forms\Components\Select::make('type')->options([
                     'pick3' => 'Pick 3',
