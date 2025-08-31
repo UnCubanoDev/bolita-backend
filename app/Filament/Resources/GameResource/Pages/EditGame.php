@@ -20,7 +20,6 @@ class EditGame extends EditRecord
 
         $game->touch(); // asegura que se dispare "updated"
         $game->refresh();
-        $game->fireModelEvent('updated', false); // 🔥 dispara tu lógica
     }
 
     protected function getHeaderActions(): array

@@ -57,7 +57,7 @@ class GameResource extends Resource
                 ->getStateUsing(function (Game $record) {
                     // Busca una apuesta (Bet) relacionada con este game
                     $bet = $record->bets()->first();
-                    return $bet ? $bet->session : 'N/A';
+                    return $bet ? $bet->session_time : 'N/A';
                 })
                 ->sortable(),
             ])
