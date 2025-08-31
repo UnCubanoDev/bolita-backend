@@ -29,6 +29,9 @@ class BetResource extends Resource
                 Forms\Components\Select::make('game_id')
                     ->label('Juego')
                     ->relationship('game', 'name')
+                    ->getOptionLabelUsing(function ($game) {
+                        return $game->name . ' - ' . $game->date;
+                    })
                     ->required(),
                 Forms\Components\Select::make('type')->options([
                     'pick3' => 'Pick 3',
