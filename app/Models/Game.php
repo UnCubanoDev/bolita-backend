@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Game extends Model
 {
     protected $fillable = [
+        'id',
         'name',
         'date',
         'pick3_winning_number',

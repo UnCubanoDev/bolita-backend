@@ -47,6 +47,7 @@ class GameResource extends Resource
                 $query->orderByDesc('created_at');
             })
             ->columns([
+                Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('date')->date(),
                 Tables\Columns\TextColumn::make('pick3_winning_number')->label('Pick 3'),

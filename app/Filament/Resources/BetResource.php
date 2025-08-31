@@ -26,11 +26,10 @@ class BetResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('user_id')->relationship('user', 'name')->required(),
-                Forms\Components\Select::make('game')->options([
-                    'Georgia' => 'Georgia',
-                    'New York' => 'New York',
-                    'Florida' => 'Florida',
-                ])->required(),
+                Forms\Components\Select::make('game_id')
+                    ->label('Juego')
+                    ->relationship('game', 'name')
+                    ->required(),
                 Forms\Components\Select::make('type')->options([
                     'pick3' => 'Pick 3',
                     'pick4' => 'Pick 4',

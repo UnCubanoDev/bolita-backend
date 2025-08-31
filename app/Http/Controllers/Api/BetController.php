@@ -88,19 +88,9 @@ class BetController extends Controller
                 }
             }
 
-            // Dentro del horario de apuestas (mañana o tarde)
-            $game = Game::firstOrCreate([
-                'name' => $gameName,
-                'date' => $validated['session']
-            ]);
-
             $message = "Apuesta registrada para la sesión actual ({$period})";
         } else {
             // Si no hay configuración de horario, usar la sesión actual
-            $game = Game::firstOrCreate([
-                'name' => $gameName,
-                'date' => $validated['session']
-            ]);
 
             $message = "Apuesta registrada (sin configuración de horario)";
         }
@@ -193,6 +183,13 @@ class BetController extends Controller
                 'required_amount' => $totalAmount
             ], 400);
         }
+
+        \DB::transaction(function() use ($gameName, $validated, &$game) {
+            $game = Game::firstOrCreate([
+                'name' => $gameName,
+                'date' => $validated['session']
+            ]);
+        });
 
         // Descontar del saldo total
         $user->decrement('wallet_balance', $totalAmount);
