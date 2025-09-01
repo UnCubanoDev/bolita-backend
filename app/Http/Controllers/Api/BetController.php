@@ -149,7 +149,7 @@ class BetController extends Controller
         // Crear o obtener el juego ANTES de validar límites
         $game = Game::firstOrCreate([
             'name' => $gameName,
-            'date' => $period
+            'date' => now()->toDateString()
         ]);
 
         // Agrupar las apuestas del request por número
