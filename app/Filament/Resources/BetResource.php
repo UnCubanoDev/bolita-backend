@@ -53,7 +53,8 @@ class BetResource extends Resource
                 }),
                 Forms\Components\Select::make('session_time')->options([
                     'morning' => 'Mañana',
-                    'evening' => 'Tarde'
+                    'noon' => 'Mediodía',
+                    'evening' => 'Tarde',
                 ])->required(),
                 Forms\Components\Repeater::make('bet_details')
                     ->label('Detalles de la apuesta')
@@ -99,7 +100,7 @@ class BetResource extends Resource
                 Tables\Columns\TextColumn::make('game.name')->label('Juego'),
                 Tables\Columns\TextColumn::make('type')->label('Tipo')->sortable(),
                 Tables\Columns\TextColumn::make('session_time')->label('Sesión')->formatStateUsing(fn (string $state): string =>
-                    $state === 'morning' ? 'Mañana' : 'Tarde'
+                    $state === 'morning' ? 'Mañana' : ($state === 'noon' ? 'Mediodía' : 'Tarde')
                 ),
                 Tables\Columns\TextColumn::make('bet_details')
                     ->label('Números')

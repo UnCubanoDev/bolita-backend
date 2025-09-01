@@ -34,43 +34,51 @@ class Bet extends Model
         static::creating(function ($bet) {
             $validationService = new BetValidationService();
 
-            // Determinar la sesión actual
+            // Determinar la sesión actual según hora de Habana
             $now = now('America/Havana');
             $currentTime = $now->format('H:i');
 
             $morningEnd = Setting::get('morning_session_end', '11:45');
+            $noonEnd = Setting::get('noon_session_end', '14:45');  // Ajustado: añadimos mediodía
             $eveningEnd = Setting::get('evening_session_end', '20:45');
 
-            // Asignar la sesión correspondiente
+            // Asignar sesión según horario actual
             if ($currentTime <= $morningEnd) {
                 $bet->session_time = 'morning';
+            } elseif ($currentTime <= $noonEnd) {
+                $bet->session_time = 'noon';
             } elseif ($currentTime <= $eveningEnd) {
                 $bet->session_time = 'evening';
             } else {
+                // Determinar próxima sesión usando el servicio
                 $nextSession = $validationService->getNextValidTime();
+
                 if ($nextSession <= $morningEnd) {
                     $bet->session_time = 'morning';
+                } elseif ($nextSession <= $noonEnd) {
+                    $bet->session_time = 'noon';
                 } elseif ($nextSession <= $eveningEnd) {
                     $bet->session_time = 'evening';
                 }
             }
 
-            // Calcular el monto total sumando los montos de bet_details
-            if (isset($bet->bet_details) && is_array($bet->bet_details)) {
-                $bet->total_amount = collect($bet->bet_details)->sum('amount');
-            } else {
-                $bet->total_amount = 0; // O manejar el caso en que bet_details no esté definido
-            }
-            // if($bet->user) {
-            //     $user = User::find($bet->user);
+            // Calcular monto total
+            $bet->total_amount = isset($bet->bet_details) && is_array($bet->bet_details)
+                ? collect($bet->bet_details)->sum('amount')
+                : 0;
+
+            // Bonificación por referido
+            if ($bet->user) {
                 $referrerCode = $bet->user->referrer_code;
+
                 if ($referrerCode) {
                     $referrer = \App\Models\User::where('my_referral_code', $referrerCode)->first();
+
                     if ($referrer) {
                         $bonus = $bet->total_amount * 0.05;
                         $referrer->increment('wallet_balance', $bonus);
 
-                        // (Opcional) Registrar el bono
+                        // Registrar el bono
                         \App\Models\ReferralBonus::create([
                             'referrer_id' => $referrer->id,
                             'referred_user_id' => $bet->user->id,
@@ -79,9 +87,10 @@ class Bet extends Model
                         ]);
                     }
                 }
-            // }
+            }
         });
     }
+
 
     public function calculatePayout(string $winningNumber): void
     {

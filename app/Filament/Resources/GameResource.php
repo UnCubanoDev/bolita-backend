@@ -64,6 +64,7 @@ class GameResource extends Resource
                         // Mapear manualmente
                         return match ($bet->session_time) {
                             'morning' => 'Mañana',
+                            'noon' => 'Mediodía',
                             'evening' => 'Tarde',
                             default => ucfirst($bet->session_time),
                         };
