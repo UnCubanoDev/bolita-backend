@@ -14,6 +14,14 @@ class SettingsSeeder extends Seeder
         $settings = [
             // Horarios generales para Georgia
             [
+                'key' => 'app_version',
+                'value' => '1',
+                'type' => 'number',
+                'label' => 'Version de la aplicación',
+                'description' => '',
+                'group' => 'system'
+            ],
+            [
                 'key' => 'georgia_morning_start',
                 'value' => '09:00',
                 'type' => 'time',

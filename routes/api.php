@@ -6,12 +6,14 @@ use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RechargeController;
 use App\Http\Controllers\Api\WithdrawalRequestController;
+use App\Http\Controllers\Api\VersionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SettingController;
 
 // Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/version', [VersionController::class, 'show']);
 Route::get('/', function () {
     config(['sanctum.middleware' => []]);
     return view('welcome');
