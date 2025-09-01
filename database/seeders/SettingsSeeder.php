@@ -15,7 +15,7 @@ class SettingsSeeder extends Seeder
             // Horarios generales para Georgia
             [
                 'key' => 'georgia_morning_start',
-                'value' => '10:00',
+                'value' => '09:00',
                 'type' => 'time',
                 'label' => 'Inicio Georgia Mañana',
                 'description' => '',
@@ -23,9 +23,25 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'georgia_morning_end',
-                'value' => '12:00',
+                'value' => '12:20',
                 'type' => 'time',
                 'label' => 'Fin Georgia Mañana',
+                'description' => '',
+                'group' => 'betting'
+            ],
+            [
+                'key' => 'georgia_noon_start',
+                'value' => '17:00',
+                'type' => 'time',
+                'label' => 'Inicio Georgia Mediodía',
+                'description' => '',
+                'group' => 'betting'
+            ],
+            [
+                'key' => 'georgia_noon_end',
+                'value' => '18:45',
+                'type' => 'time',
+                'label' => 'Fin Georgia Mediodía',
                 'description' => '',
                 'group' => 'betting'
             ],
@@ -39,7 +55,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'georgia_evening_end',
-                'value' => '18:45',
+                'value' => '18:50',
                 'type' => 'time',
                 'label' => 'Fin Georgia Tarde',
                 'description' => '',
@@ -48,7 +64,7 @@ class SettingsSeeder extends Seeder
             // Horarios generales para Florida
             [
                 'key' => 'florida_morning_start',
-                'value' => '10:00',
+                'value' => '09:00',
                 'type' => 'time',
                 'label' => 'Inicio Florida Mañana',
                 'description' => '',
@@ -56,7 +72,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'florida_morning_end',
-                'value' => '13:00',
+                'value' => '13:20',
                 'type' => 'time',
                 'label' => 'Fin Florida Mañana',
                 'description' => '',
@@ -72,7 +88,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'florida_evening_end',
-                'value' => '21:00',
+                'value' => '21:30',
                 'type' => 'time',
                 'label' => 'Fin Florida Tarde',
                 'description' => '',
@@ -89,7 +105,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'newyork_morning_end',
-                'value' => '14:00',
+                'value' => '14:20',
                 'type' => 'time',
                 'label' => 'Fin New York Mañana',
                 'description' => '',
@@ -105,7 +121,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'newyork_evening_end',
-                'value' => '22:00',
+                'value' => '22:20',
                 'type' => 'time',
                 'label' => 'Fin New York Tarde',
                 'description' => '',

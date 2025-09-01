@@ -23,12 +23,12 @@ class BetController extends Controller
     {
         $validated = $request->validate([
             'game_name' => 'required|string',
-            'session' => 'required|string',
             'variant' => 'required|string',
             'bet_details' => 'required|array|min:1',
             'bet_details.*.number' => 'required|string',
             'bet_details.*.amount' => 'required|numeric|min:1',
         ]);
+        $period = '';
 
         // Validar horario de apuestas
         $currentTime = now();
@@ -38,26 +38,33 @@ class BetController extends Controller
         // Obtener horarios desde Settings
         $lotteryKey = strtolower(str_replace(' ', '', $gameName)); // "Georgia Lottery" -> "georgia"
 
-        // Obtener horarios de mañana y tarde para determinar el periodo actual
+        // Obtener horarios de mañana , mediodía y tarde para determinar el periodo actual
         $morningStartKey = "{$lotteryKey}_morning_start";
         $morningEndKey = "{$lotteryKey}_morning_end";
         $eveningStartKey = "{$lotteryKey}_evening_start";
         $eveningEndKey = "{$lotteryKey}_evening_end";
+        $noonStartKey = "{$lotteryKey}_noon_start";
+        $noonEndKey = "{$lotteryKey}_noon_end";
 
         $morningStart = Setting::get($morningStartKey);
         $morningEnd = Setting::get($morningEndKey);
         $eveningStart = Setting::get($eveningStartKey);
         $eveningEnd = Setting::get($eveningEndKey);
+        $noonStart = Setting::get($noonStartKey);
+        $noonEnd = Setting::get($noonEndKey);
 
-        if ($morningStart && $morningEnd && $eveningStart && $eveningEnd) {
+        if ($morningStart && $morningEnd && $eveningStart && $eveningEnd || ($lotteryKey === 'georgia' && $noonStart && $noonEnd)) { 
             $morningStart = \Carbon\Carbon::parse($morningStart);
             $morningEnd = \Carbon\Carbon::parse($morningEnd);
             $eveningStart = \Carbon\Carbon::parse($eveningStart);
             $eveningEnd = \Carbon\Carbon::parse($eveningEnd);
+            $noonStart = \Carbon\Carbon::parse($noonStart);
+            $noonEnd = \Carbon\Carbon::parse($noonEnd);
 
             // Determinar el periodo actual basado en las configuraciones
             $isMorning = $currentTime->between($morningStart, $morningEnd);
             $isEvening = $currentTime->between($eveningStart, $eveningEnd);
+            $isNoon = $currentTime->between($noonStart, $noonEnd);
 
             if ($isMorning) {
                 $period = 'morning';
@@ -67,32 +74,62 @@ class BetController extends Controller
                 $period = 'evening';
                 $startTime = $eveningStart;
                 $endTime = $eveningEnd;
-            } else {
+            } else if ($isNoon && $gameName === 'Georgia Lottery') {
+                $period = 'noon';
+                $startTime = $noonStart;
+                $endTime = $noonEnd;
+            }else {
                 // 🚫 Fuera de horarios → NO se crea la apuesta, solo mensaje
-                if ($currentTime->gt($eveningEnd)) {
-                    // Después del horario de tarde → próxima mañana
-                    $nextSession = $morningStart->copy()->addDay()->format('H:i');
-                    return response()->json([
-                        'message' => "No puede apostar en este momento. El próximo horario disponible es mañana a las {$nextSession}"
-                    ], 400);
-                } elseif ($currentTime->lt($morningStart)) {
-                    // Antes del horario de mañana
-                    return response()->json([
-                        'message' => "No puede apostar en este momento. El próximo horario disponible es hoy en la mañana: {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}"
-                    ], 400);
+                if ($lotteryKey === 'georgia') {
+                    // Georgia tiene 3 sesiones: mañana, mediodía, tarde
+                    if ($currentTime->lt($morningStart)) {
+                        // Antes de la mañana
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es hoy en la mañana: {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}"
+                        ], 400);
+                    } elseif ($currentTime->gt($morningEnd) && $currentTime->lt($noonStart)) {
+                        // Entre mañana y mediodía
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es al mediodía: {$noonStart->format('H:i')} - {$noonEnd->format('H:i')}"
+                        ], 400);
+                    } elseif ($currentTime->gt($noonEnd) && $currentTime->lt($eveningStart)) {
+                        // Entre mediodía y tarde
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es en la tarde: {$eveningStart->format('H:i')} - {$eveningEnd->format('H:i')}"
+                        ], 400);
+                    } elseif ($currentTime->gt($eveningEnd)) {
+                        // Después de la tarde
+                        $nextSession = $morningStart->copy()->addDay()->format('H:i');
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es mañana a las {$nextSession}"
+                        ], 400);
+                    }
                 } else {
-                    // Gap entre mañana y tarde
-                    return response()->json([
-                        'message' => "No puede apostar en este momento. El próximo horario disponible es en la tarde: {$eveningStart->format('H:i')} - {$eveningEnd->format('H:i')}"
-                    ], 400);
+                    // 🚫 Lógica original para loterías normales
+                    if ($currentTime->gt($eveningEnd)) {
+                        // Después del horario de tarde → próxima mañana
+                        $nextSession = $morningStart->copy()->addDay()->format('H:i');
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es mañana a las {$nextSession}"
+                        ], 400);
+                    } elseif ($currentTime->lt($morningStart)) {
+                        // Antes del horario de mañana
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es hoy en la mañana: {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}"
+                        ], 400);
+                    } else {
+                        // Gap entre mañana y tarde
+                        return response()->json([
+                            'message' => "No puede apostar en este momento. El próximo horario disponible es en la tarde: {$eveningStart->format('H:i')} - {$eveningEnd->format('H:i')}"
+                        ], 400);
+                    }
                 }
             }
-
             $message = "Apuesta registrada para la sesión actual ({$period})";
-        } else {
-            // Si no hay configuración de horario, usar la sesión actual
-
-            $message = "Apuesta registrada (sin configuración de horario)";
+        }else {
+            return response()->json([
+                'message' => "No puede apostar en este momento. El próximo horario disponible es mañana a las {$morningStart->format('H:i')} - {$morningEnd->format('H:i')}"
+            ], 400);
         }
 
         $totalAmount = collect($validated['bet_details'])->sum('amount');
@@ -187,7 +224,7 @@ class BetController extends Controller
         \DB::transaction(function() use ($gameName, $validated, &$game) {
             $game = Game::firstOrCreate([
                 'name' => $gameName,
-                'date' => $validated['session']
+                'date' => $period
             ]);
         });
 
