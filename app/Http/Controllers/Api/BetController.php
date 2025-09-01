@@ -53,7 +53,7 @@ class BetController extends Controller
         $noonStart = Setting::get($noonStartKey);
         $noonEnd = Setting::get($noonEndKey);
 
-        if ($morningStart && $morningEnd && $eveningStart && $eveningEnd || ($lotteryKey === 'georgia' && $noonStart && $noonEnd)) { 
+        if ($morningStart && $morningEnd && $eveningStart && $eveningEnd || ($lotteryKey === 'georgia' && $noonStart && $noonEnd)) {
             $morningStart = \Carbon\Carbon::parse($morningStart);
             $morningEnd = \Carbon\Carbon::parse($morningEnd);
             $eveningStart = \Carbon\Carbon::parse($eveningStart);
@@ -135,6 +135,23 @@ class BetController extends Controller
         $totalAmount = collect($validated['bet_details'])->sum('amount');
         $user = auth()->user();
 
+        // Verificar saldo disponible (no congelado)
+        if ($user->available_balance < $totalAmount) {
+            return response()->json([
+                'error' => 'Saldo disponible insuficiente para realizar la apuesta',
+                'available_balance' => $user->available_balance,
+                'frozen_balance' => $user->frozen_balance,
+                'total_balance' => $user->wallet_balance,
+                'required_amount' => $totalAmount
+            ], 400);
+        }
+
+        // Crear o obtener el juego ANTES de validar límites
+        $game = Game::firstOrCreate([
+            'name' => $gameName,
+            'date' => $period
+        ]);
+
         // Agrupar las apuestas del request por número
         $requestGrouped = collect($validated['bet_details'])
             ->groupBy('number')
@@ -209,24 +226,6 @@ class BetController extends Controller
                 }
             }
         }
-
-        // Verificar saldo disponible (no congelado)
-        if ($user->available_balance < $totalAmount) {
-            return response()->json([
-                'error' => 'Saldo disponible insuficiente para realizar la apuesta',
-                'available_balance' => $user->available_balance,
-                'frozen_balance' => $user->frozen_balance,
-                'total_balance' => $user->wallet_balance,
-                'required_amount' => $totalAmount
-            ], 400);
-        }
-
-        \DB::transaction(function() use ($gameName, $validated, &$game) {
-            $game = Game::firstOrCreate([
-                'name' => $gameName,
-                'date' => $period
-            ]);
-        });
 
         // Descontar del saldo total
         $user->decrement('wallet_balance', $totalAmount);
