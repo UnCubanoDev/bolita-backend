@@ -19,16 +19,9 @@ class Game extends Model
         static::updated(function ($game) {
             // Procesar apuestas pick3 si se actualizó pick3_winning_number
             if ($game->isDirty('pick3_winning_number') && $game->pick3_winning_number) {
-                // Obtener apuestas que ya tenían payout > 0
-                $existingBetsWithPayout = \App\Models\Bet::where('game_id', $game->id)
-                    ->where('type', 'pick3')
-                    ->where('total_payout', '>', 0)
-                    ->get();
-
-                // Procesar apuestas pick3
+                // Procesar TODAS las apuestas pick3 (no solo las pending)
                 $betsPick3 = \App\Models\Bet::where('game_id', $game->id)
                     ->where('type', 'pick3')
-                    ->where('status', 'pending')
                     ->get();
 
                 foreach ($betsPick3 as $bet) {
@@ -41,10 +34,9 @@ class Game extends Model
                     }
                 }
 
-                // Procesar apuestas fijo (comparando solo los dos últimos dígitos del pick3)
+                // Procesar TODAS las apuestas fijo (no solo las pending)
                 $betsFijo = \App\Models\Bet::where('game_id', $game->id)
                     ->where('type', 'fijo')
-                    ->where('status', 'pending')
                     ->get();
 
                 $lastTwoDigits = substr($game->pick3_winning_number, -2);
@@ -66,18 +58,26 @@ class Game extends Model
                     // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
                     if ($oldPayout > 0 && $totalPayout == 0) {
                         $bet->user->decrement('wallet_balance', $oldPayout);
-                    } elseif ($totalPayout > 0) {
+                    } elseif ($totalPayout > 0 && $oldPayout == 0) {
+                        // Si el payout anterior era 0 y ahora es > 0, incrementar la wallet
                         $bet->user->increment('wallet_balance', $totalPayout);
+                    } elseif ($oldPayout > 0 && $totalPayout > 0 && $oldPayout != $totalPayout) {
+                        // Si el payout cambió pero sigue siendo > 0, ajustar la diferencia
+                        $difference = $totalPayout - $oldPayout;
+                        if ($difference > 0) {
+                            $bet->user->increment('wallet_balance', $difference);
+                        } else {
+                            $bet->user->decrement('wallet_balance', abs($difference));
+                        }
                     }
                 }
             }
 
             // Procesar apuestas pick4, corrido y parle si se actualizó pick4_winning_number
             if ($game->isDirty('pick4_winning_number') && $game->pick4_winning_number) {
-                // Procesar apuestas pick4
+                // Procesar TODAS las apuestas pick4 (no solo las pending)
                 $betsPick4 = \App\Models\Bet::where('game_id', $game->id)
                     ->where('type', 'pick4')
-                    ->where('status', 'pending')
                     ->get();
 
                 foreach ($betsPick4 as $bet) {
@@ -90,10 +90,9 @@ class Game extends Model
                     }
                 }
 
-                // Procesar apuestas corrido
+                // Procesar TODAS las apuestas corrido (no solo las pending)
                 $betsCorrido = \App\Models\Bet::where('game_id', $game->id)
                     ->where('type', 'corrido')
-                    ->where('status', 'pending')
                     ->get();
 
                 foreach ($betsCorrido as $bet) {
@@ -122,8 +121,17 @@ class Game extends Model
                     // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
                     if ($oldPayout > 0 && $totalPayout == 0) {
                         $bet->user->decrement('wallet_balance', $oldPayout);
-                    } elseif ($totalPayout > 0) {
+                    } elseif ($totalPayout > 0 && $oldPayout == 0) {
+                        // Si el payout anterior era 0 y ahora es > 0, incrementar la wallet
                         $bet->user->increment('wallet_balance', $totalPayout);
+                    } elseif ($oldPayout > 0 && $totalPayout > 0 && $oldPayout != $totalPayout) {
+                        // Si el payout cambió pero sigue siendo > 0, ajustar la diferencia
+                        $difference = $totalPayout - $oldPayout;
+                        if ($difference > 0) {
+                            $bet->user->increment('wallet_balance', $difference);
+                        } else {
+                            $bet->user->decrement('wallet_balance', abs($difference));
+                        }
                     }
                 }
 
@@ -135,10 +143,9 @@ class Game extends Model
                 $ganadores[] = substr($game->pick4_winning_number, 0, 2);
                 $ganadores[] = substr($game->pick4_winning_number, -2);
 
-                // Procesar apuestas parle
+                // Procesar TODAS las apuestas parle (no solo las pending)
                 $betsParle = \App\Models\Bet::where('game_id', $game->id)
                     ->where('type', 'parle')
-                    ->where('status', 'pending')
                     ->get();
 
                 foreach ($betsParle as $bet) {
@@ -165,8 +172,17 @@ class Game extends Model
                     // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
                     if ($oldPayout > 0 && $totalPayout == 0) {
                         $bet->user->decrement('wallet_balance', $oldPayout);
-                    } elseif ($totalPayout > 0) {
+                    } elseif ($totalPayout > 0 && $oldPayout == 0) {
+                        // Si el payout anterior era 0 y ahora es > 0, incrementar la wallet
                         $bet->user->increment('wallet_balance', $totalPayout);
+                    } elseif ($oldPayout > 0 && $totalPayout > 0 && $oldPayout != $totalPayout) {
+                        // Si el payout cambió pero sigue siendo > 0, ajustar la diferencia
+                        $difference = $totalPayout - $oldPayout;
+                        if ($difference > 0) {
+                            $bet->user->increment('wallet_balance', $difference);
+                        } else {
+                            $bet->user->decrement('wallet_balance', abs($difference));
+                        }
                     }
                 }
             }
