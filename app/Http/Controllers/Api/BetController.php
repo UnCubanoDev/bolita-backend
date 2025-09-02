@@ -74,7 +74,7 @@ class BetController extends Controller
                 $period = 'evening';
                 $startTime = $eveningStart;
                 $endTime = $eveningEnd;
-            } else if ($isNoon && $gameName === 'Georgia Lottery') {
+            } else if ($isNoon && $lotteryKey === 'georgia') {
                 $period = 'noon';
                 $startTime = $noonStart;
                 $endTime = $noonEnd;
@@ -148,8 +148,8 @@ class BetController extends Controller
 
         // Crear o obtener el juego ANTES de validar límites
         $game = Game::firstOrCreate([
-            'name' => $gameName,
-            'date' => now()->toDateString()
+            'name' => $gameName.' - '.$period,
+            'date' => now()->toDateString(),
         ]);
 
         // Agrupar las apuestas del request por número

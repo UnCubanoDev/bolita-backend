@@ -94,6 +94,7 @@ class Bet extends Model
 
     public function calculatePayout(string $winningNumber): void
     {
+        $oldPayout = $this->total_payout;
         $totalPayout = 0;
 
         if ($this->type === 'pick3') {
@@ -172,8 +173,11 @@ class Bet extends Model
             'status' => $totalPayout > 0 ? 'won' : 'lost'
         ]);
 
-        if ($totalPayout > 0) {
-            $bet->user->increment('wallet_balance', $totalPayout);
+        // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
+        if ($oldPayout > 0 && $totalPayout == 0) {
+            $this->user->decrement('wallet_balance', $oldPayout);
+        } elseif ($totalPayout > 0) {
+            $this->user->increment('wallet_balance', $totalPayout);
         }
     }
 

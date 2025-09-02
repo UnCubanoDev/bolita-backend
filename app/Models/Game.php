@@ -19,6 +19,12 @@ class Game extends Model
         static::updated(function ($game) {
             // Procesar apuestas pick3 si se actualizó pick3_winning_number
             if ($game->isDirty('pick3_winning_number') && $game->pick3_winning_number) {
+                // Obtener apuestas que ya tenían payout > 0
+                $existingBetsWithPayout = \App\Models\Bet::where('game_id', $game->id)
+                    ->where('type', 'pick3')
+                    ->where('total_payout', '>', 0)
+                    ->get();
+
                 // Procesar apuestas pick3
                 $betsPick3 = \App\Models\Bet::where('game_id', $game->id)
                     ->where('type', 'pick3')
@@ -26,7 +32,13 @@ class Game extends Model
                     ->get();
 
                 foreach ($betsPick3 as $bet) {
+                    $oldPayout = $bet->total_payout;
                     $bet->calculatePayout($game->pick3_winning_number);
+
+                    // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
+                    if ($oldPayout > 0 && $bet->total_payout == 0) {
+                        $bet->user->decrement('wallet_balance', $oldPayout);
+                    }
                 }
 
                 // Procesar apuestas fijo (comparando solo los dos últimos dígitos del pick3)
@@ -38,6 +50,7 @@ class Game extends Model
                 $lastTwoDigits = substr($game->pick3_winning_number, -2);
 
                 foreach ($betsFijo as $bet) {
+                    $oldPayout = $bet->total_payout;
                     $totalPayout = 0;
                     foreach ($bet->bet_details as $detalle) {
                         if ($detalle['number'] === $lastTwoDigits) {
@@ -49,7 +62,11 @@ class Game extends Model
                         'total_payout' => $totalPayout,
                         'status' => $totalPayout > 0 ? 'won' : 'lost'
                     ]);
-                    if ($totalPayout > 0) {
+
+                    // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
+                    if ($oldPayout > 0 && $totalPayout == 0) {
+                        $bet->user->decrement('wallet_balance', $oldPayout);
+                    } elseif ($totalPayout > 0) {
                         $bet->user->increment('wallet_balance', $totalPayout);
                     }
                 }
@@ -64,7 +81,13 @@ class Game extends Model
                     ->get();
 
                 foreach ($betsPick4 as $bet) {
+                    $oldPayout = $bet->total_payout;
                     $bet->calculatePayout($game->pick4_winning_number);
+
+                    // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
+                    if ($oldPayout > 0 && $bet->total_payout == 0) {
+                        $bet->user->decrement('wallet_balance', $oldPayout);
+                    }
                 }
 
                 // Procesar apuestas corrido
@@ -74,11 +97,19 @@ class Game extends Model
                     ->get();
 
                 foreach ($betsCorrido as $bet) {
+                    $oldPayout = $bet->total_payout;
                     $totalPayout = 0;
                     $payoutMultiplier = (float) \App\Models\Setting::get('payout_corrido', 25);
 
+                    // Dividir el número ganador en pares de 2 dígitos
+                    $winningPairs = [
+                        substr($game->pick4_winning_number, 0, 2), // primeros 2 dígitos (12)
+                        substr($game->pick4_winning_number, 2, 2)  // últimos 2 dígitos (34)
+                    ];
+
                     foreach ($bet->bet_details as $detalle) {
-                        if (strpos($game->pick4_winning_number, $detalle['number']) !== false) {
+                        // Verificar si el número apostado coincide exactamente con alguno de los pares ganadores
+                        if (in_array($detalle['number'], $winningPairs)) {
                             $totalPayout += $detalle['amount'] * $payoutMultiplier;
                         }
                     }
@@ -87,7 +118,11 @@ class Game extends Model
                         'total_payout' => $totalPayout,
                         'status' => $totalPayout > 0 ? 'won' : 'lost'
                     ]);
-                    if ($totalPayout > 0) {
+
+                    // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
+                    if ($oldPayout > 0 && $totalPayout == 0) {
+                        $bet->user->decrement('wallet_balance', $oldPayout);
+                    } elseif ($totalPayout > 0) {
                         $bet->user->increment('wallet_balance', $totalPayout);
                     }
                 }
@@ -107,6 +142,7 @@ class Game extends Model
                     ->get();
 
                 foreach ($betsParle as $bet) {
+                    $oldPayout = $bet->total_payout;
                     $totalPayout = 0;
                     $payoutMultiplier = (float) \App\Models\Setting::get('payout_parle', 200);
 
@@ -125,7 +161,11 @@ class Game extends Model
                         'total_payout' => $totalPayout,
                         'status' => $totalPayout > 0 ? 'won' : 'lost'
                     ]);
-                    if ($totalPayout > 0) {
+
+                    // Si el payout anterior era > 0 y ahora es 0, decrementar la wallet
+                    if ($oldPayout > 0 && $totalPayout == 0) {
+                        $bet->user->decrement('wallet_balance', $oldPayout);
+                    } elseif ($totalPayout > 0) {
                         $bet->user->increment('wallet_balance', $totalPayout);
                     }
                 }
