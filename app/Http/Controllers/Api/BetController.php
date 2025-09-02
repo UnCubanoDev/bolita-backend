@@ -235,7 +235,7 @@ class BetController extends Controller
             'game_id' => $game->id,
             'type' => $validated['variant'],
             'bet_details' => $validated['bet_details'],
-            'session_time' => $request->input('session_time', null),
+            'session_time' => $period,
             'total_amount' => $totalAmount,
             'status' => 'pending',
             'lotto' => $gameName,
