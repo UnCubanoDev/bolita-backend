@@ -43,11 +43,11 @@ class Bet extends Model
             $eveningEnd = Setting::get('evening_session_end', '20:45');
 
             // Asignar sesión según horario actual
-            if ($currentTime <= $morningEnd) {
+            if ($currentTime < $morningEnd) {
                 $bet->session_time = 'morning';
-            } elseif ($currentTime <= $noonEnd) {
+            } elseif ($currentTime < $noonEnd) {
                 $bet->session_time = 'noon';
-            } elseif ($currentTime <= $eveningEnd) {
+            } elseif ($currentTime < $eveningEnd) {
                 $bet->session_time = 'evening';
             } else {
                 // Determinar próxima sesión usando el servicio
