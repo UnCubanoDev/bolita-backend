@@ -107,4 +107,35 @@ class BetValidationService
         return null; // apuestas permitidas
     }
 
+    /**
+     * Determina si se puede cancelar una apuesta según la sesión y horarios configurados.
+     * - Solo se permite cancelar si la apuesta está "pending".
+     * - Se valida contra los horarios de la sesión de la lotería/serie (morning/noon/evening).
+     *
+     * @param string $lotteryName   Nombre visible de la lotería (p.ej. "Georgia", "Florida", "New York")
+     * @param string $sessionTime   "morning" | "noon" | "evening"
+     * @return bool
+     */
+    public function canCancelBet(string $lotteryName, string $sessionTime): bool
+    {
+        $now = Carbon::now('America/Havana');
+        $current = $now->format('H:i');
+
+        $lotteryKey = strtolower(str_replace(' ', '', $lotteryName));
+
+        $startKey = "{$lotteryKey}_{$sessionTime}_start"; // e.g., georgia_morning_start
+        $endKey   = "{$lotteryKey}_{$sessionTime}_end";   // e.g., georgia_morning_end
+
+        $start = Setting::get($startKey);
+        $end   = Setting::get($endKey);
+
+        if (! $start || ! $end) {
+            // Si no hay configuración explícita, no permitir por seguridad
+            return false;
+        }
+
+        // Permitir cancelación solamente dentro del rango de la sesión
+        return $current >= $start && $current <= $end;
+    }
+
 }

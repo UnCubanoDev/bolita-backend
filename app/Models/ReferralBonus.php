@@ -11,6 +11,7 @@ class ReferralBonus extends Model
         'referrer_id',
         'referred_user_id',
         'bonus_amount',
+        'bet_id',
         'credited_at',
         // otros campos que necesites
     ];

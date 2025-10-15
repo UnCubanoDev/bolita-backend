@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/bets', [BetController::class, 'store']);
     Route::get('/bets', [BetController::class, 'index']);
     Route::get('/bets/{bet}', [BetController::class, 'show']);
+    Route::delete('/bets/{bet}', [BetController::class, 'delete']);
     Route::get('/bets/active', [BetController::class, 'getActiveBets']);
 
     // Juegos

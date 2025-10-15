@@ -25,6 +25,25 @@ class Game extends Model
                     ->get();
 
                 foreach ($betsPick3 as $bet) {
+                    // Bonificación por referido (idempotente por apuesta)
+                    $user = $bet->user;
+                    if ($user && $user->referrer_code) {
+                        $referrer = \App\Models\User::where('my_referral_code', $user->referrer_code)->first();
+                        if ($referrer) {
+                            $exists = \App\Models\ReferralBonus::where('bet_id', $bet->id)->exists();
+                            if (!$exists) {
+                                $bonus = $bet->total_amount * 0.05;
+                                $referrer->increment('wallet_balance', $bonus);
+                                \App\Models\ReferralBonus::create([
+                                    'referrer_id' => $referrer->id,
+                                    'referred_user_id' => $user->id,
+                                    'bonus_amount' => $bonus,
+                                    'bet_id' => $bet->id,
+                                    'credited_at' => now(),
+                                ]);
+                            }
+                        }
+                    }
                     $oldPayout = $bet->total_payout;
                     $bet->calculatePayout($game->pick3_winning_number);
 
@@ -81,6 +100,25 @@ class Game extends Model
                     ->get();
 
                 foreach ($betsPick4 as $bet) {
+                    // Bonificación por referido (idempotente por apuesta)
+                    $user = $bet->user;
+                    if ($user && $user->referrer_code) {
+                        $referrer = \App\Models\User::where('my_referral_code', $user->referrer_code)->first();
+                        if ($referrer) {
+                            $exists = \App\Models\ReferralBonus::where('bet_id', $bet->id)->exists();
+                            if (!$exists) {
+                                $bonus = $bet->total_amount * 0.05;
+                                $referrer->increment('wallet_balance', $bonus);
+                                \App\Models\ReferralBonus::create([
+                                    'referrer_id' => $referrer->id,
+                                    'referred_user_id' => $user->id,
+                                    'bonus_amount' => $bonus,
+                                    'bet_id' => $bet->id,
+                                    'credited_at' => now(),
+                                ]);
+                            }
+                        }
+                    }
                     $oldPayout = $bet->total_payout;
                     $bet->calculatePayout($game->pick4_winning_number);
 

@@ -284,4 +284,47 @@ class BetController extends Controller
             ->get();
         return response()->json($activeBets);
     }
+
+    public function delete(Request $request, $id)
+    {
+        $bet = Bet::where('user_id', auth()->id())->find($id);
+        if (! $bet) {
+            return response()->json(['message' => 'Apuesta no encontrada'], 404);
+        }
+
+        if ($bet->status !== 'pending') {
+            return response()->json(['message' => 'Solo se pueden cancelar apuestas pendientes'], 400);
+        }
+
+        // Validar horario/serie de la sesión usando Settings: <lottery>_<session>_{start,end}
+        $lotteryName = $bet->lotto ?: $bet->game?->name; // fallback por si no existe lotto
+        $sessionTime = $bet->session_time; // morning|noon|evening
+
+        if (! $lotteryName || ! $sessionTime) {
+            return response()->json(['message' => 'No se pudo determinar la serie o la sesión de la apuesta'], 400);
+        }
+
+        $canCancel = $this->betValidationService->canCancelBet($lotteryName, $sessionTime);
+
+        if (! $canCancel) {
+            return response()->json(['message' => 'No se puede cancelar esta apuesta fuera del horario de su sesión'], 400);
+        }
+
+        // Reintegrar el monto al balance del usuario y eliminar
+        $user = $request->user();
+        $refundAmount = (float) $bet->total_amount;
+
+        $user->increment('wallet_balance', $refundAmount);
+        $bet->delete();
+
+        return response()->json([
+            'message' => 'Apuesta cancelada correctamente',
+            'refunded' => $refundAmount,
+            'balance_info' => [
+                'available_balance' => $user->available_balance,
+                'frozen_balance' => $user->frozen_balance,
+                'total_balance' => $user->wallet_balance,
+            ],
+        ], 200);
+    }
 }

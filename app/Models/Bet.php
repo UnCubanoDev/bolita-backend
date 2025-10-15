@@ -67,27 +67,7 @@ class Bet extends Model
                 ? collect($bet->bet_details)->sum('amount')
                 : 0;
 
-            // Bonificación por referido
-            if ($bet->user) {
-                $referrerCode = $bet->user->referrer_code;
-
-                if ($referrerCode) {
-                    $referrer = \App\Models\User::where('my_referral_code', $referrerCode)->first();
-
-                    if ($referrer) {
-                        $bonus = $bet->total_amount * 0.05;
-                        $referrer->increment('wallet_balance', $bonus);
-
-                        // Registrar el bono
-                        \App\Models\ReferralBonus::create([
-                            'referrer_id' => $referrer->id,
-                            'referred_user_id' => $bet->user->id,
-                            'bonus_amount' => $bonus,
-                            'credited_at' => now(),
-                        ]);
-                    }
-                }
-            }
+            // Bonificación por referido movida al cierre de resultados del Game
         });
     }
 
